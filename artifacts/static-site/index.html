@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Core Sportswears — Catalogue</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!--
   ============================================================================
@@ -398,7 +400,7 @@
     <div class="modal-head">
       <h3 id="modalTitle">Catalogue</h3>
       <div class="actions">
-        <a class="icon-btn" id="downloadBtn" href="#" download title="Download PDF">⭳</a>
+        <button class="icon-btn" id="downloadBtn" title="Download PDF">⭳</button>
         <button class="icon-btn" id="closeModal" title="Close">✕</button>
       </div>
     </div>
@@ -533,23 +535,12 @@ const pageIndicator = document.getElementById('pageIndicator');
 let activePages = [];   // DOM elements for the currently open catalogue
 let currentIndex = 0;
 let isAnimating = false;
+let currentCatIndex = 0;
 
 function openCatalogue(i){
   const cat = CATEGORIES[i];
+  currentCatIndex = i;
   modalTitle.textContent = cat.name + ' — Catalogue';
-
-  // Set up the download button
-  if (cat.pdfUrl && cat.pdfUrl !== '#') {
-    downloadBtn.href = cat.pdfUrl;
-    downloadBtn.style.opacity = '1';
-    downloadBtn.style.pointerEvents = 'auto';
-    downloadBtn.title = 'Download PDF';
-  } else {
-    downloadBtn.href = '#';
-    downloadBtn.style.opacity = '0.35';
-    downloadBtn.style.pointerEvents = 'none';
-    downloadBtn.title = 'PDF not yet available';
-  }
 
   flipEl.innerHTML = '';
   activePages = cat.pages.map((html, idx) => {
@@ -563,6 +554,51 @@ function openCatalogue(i){
   pageIndicator.textContent = `Page 1 / ${activePages.length}`;
 
   backdrop.classList.add('open');
+}
+
+async function downloadCatalogueAsPDF(){
+  const cat = CATEGORIES[currentCatIndex];
+  const btn = downloadBtn;
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '…';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [420, 560] });
+
+    // Render each page off-screen, capture it, add to PDF
+    const offscreen = document.createElement('div');
+    offscreen.style.cssText = 'position:fixed;left:-9999px;top:0;width:420px;height:560px;overflow:hidden;z-index:-1;';
+    document.body.appendChild(offscreen);
+
+    for (let idx = 0; idx < cat.pages.length; idx++) {
+      offscreen.innerHTML = cat.pages[idx];
+      // Small delay so fonts/layout settle
+      await new Promise(r => setTimeout(r, 80));
+
+      const canvas = await html2canvas(offscreen, {
+        width: 420, height: 560,
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null
+      });
+
+      if (idx > 0) pdf.addPage([420, 560], 'portrait');
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 420, 560);
+
+      btn.innerHTML = `${idx + 1}/${cat.pages.length}`;
+    }
+
+    document.body.removeChild(offscreen);
+    pdf.save(`CoreSportswears-${cat.name.replace(/[^a-z0-9]/gi,'_')}-Catalogue.pdf`);
+  } catch(err) {
+    console.error('PDF generation failed:', err);
+    alert('Could not generate PDF. Please try again.');
+  }
+
+  btn.innerHTML = originalHtml;
+  btn.disabled = false;
 }
 
 function goToPage(newIndex, direction){
@@ -594,6 +630,7 @@ function goToPage(newIndex, direction){
 
 document.getElementById('nextPage').addEventListener('click', () => goToPage(currentIndex + 1, 'next'));
 document.getElementById('prevPage').addEventListener('click', () => goToPage(currentIndex - 1, 'prev'));
+document.getElementById('downloadBtn').addEventListener('click', downloadCatalogueAsPDF);
 
 document.getElementById('closeModal').addEventListener('click', () => {
   backdrop.classList.remove('open');
