@@ -4,8 +4,11 @@ modules = ["nodejs-24"]
 router = "application"
 deploymentTarget = "autoscale"
 
+[deployment.run]
+args = ["pnpm", "--filter", "@workspace/api-server", "run", "start"]
+
 [deployment.postBuild]
-args = ["pnpm", "store", "prune"]
+args = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
 env = { "CI" = "true" }
 
 [workflows]
