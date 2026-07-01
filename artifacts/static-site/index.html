@@ -26,18 +26,19 @@
 -->
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
   :root{
-    --bg: #0e1013;
-    --bg-panel: #16191d;
-    --ink: #f4f2ec;
-    --ink-dim: #9a9ea6;
-    --line: #2a2e34;
-    --accent: #ff4b2b;      /* athletic red-orange */
-    --accent-2: #2f6690;    /* ski blue */
-    --accent-ink: #0e1013;
-    --radius: 2px;
-    --font-display: 'Oswald', 'Arial Narrow', sans-serif;
-    --font-body: 'Inter', -apple-system, Segoe UI, sans-serif;
+    --bg: #ffffff;
+    --bg-panel: #f8f8f8;
+    --ink: #333333;
+    --ink-dim: #777777;
+    --line: #e0e0e0;
+    --accent: #E91E63;
+    --accent-2: #2f6690;
+    --accent-ink: #ffffff;
+    --radius: 4px;
+    --font-display: 'Open Sans', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
   }
 
   @font-face{ /* fallback stack only, no external font risk */ }
@@ -56,9 +57,7 @@
 
   h1,h2,h3,.display{
     font-family:var(--font-display);
-    text-transform:uppercase;
-    letter-spacing:0.02em;
-    font-weight:700;
+    font-weight:600;
   }
 
   a{color:inherit; text-decoration:none;}
@@ -70,96 +69,76 @@
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 5vw;
-    background:rgba(14,16,19,0.92);
+    background:rgba(255,255,255,0.95);
     backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line);
   }
   .logo{
     font-family:var(--font-display);
     font-size:22px;
-    letter-spacing:0.06em;
-    font-weight:700;
+    font-weight:600;
+    color:#333;
   }
   .logo span{color:var(--accent);}
-  nav.links{display:flex; gap:32px; font-size:13px; letter-spacing:0.08em; text-transform:uppercase;}
+  nav.links{display:flex; gap:32px; font-size:13px; font-weight:600;}
   nav.links a{color:var(--ink-dim); transition:color .2s;}
-  nav.links a:hover{color:var(--ink);}
+  nav.links a:hover{color:var(--accent);}
   .nav-cta{
     padding:10px 20px; background:var(--accent); color:#fff;
-    font-size:12px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
+    font-size:12px; font-weight:600;
     border-radius:var(--radius);
   }
   @media (max-width:800px){ nav.links{display:none;} }
 
   /* ---------- HERO ---------- */
   .hero{
-    position:relative;
-    padding:120px 5vw 90px;
-    overflow:hidden;
-    border-bottom:1px solid var(--line);
+    text-align:center;
+    padding:100px 5vw 60px;
   }
-  .hero::before{
-    content:"";
-    position:absolute; inset:0;
-    background:
-      repeating-linear-gradient(115deg, transparent 0 78px, rgba(255,75,43,0.06) 78px 80px),
-      repeating-linear-gradient(115deg, transparent 0 78px, rgba(47,102,144,0.05) 79px 81px);
-    pointer-events:none;
-  }
-  .eyebrow{
-    display:inline-flex; align-items:center; gap:10px;
-    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
-    color:var(--accent); margin-bottom:22px; position:relative;
-  }
-  .eyebrow::before{content:"";width:26px;height:2px;background:var(--accent);}
   .hero h1{
-    font-size:clamp(38px, 7vw, 88px);
-    line-height:0.98;
-    max-width:16ch;
-    position:relative;
+    font-size:44px;
+    font-weight:600;
+    margin-bottom:15px;
+    color:#222;
   }
   .hero p{
-    margin-top:26px; max-width:52ch; color:var(--ink-dim); font-size:16px;
-    position:relative;
+    color:var(--ink-dim);
+    font-size:16px;
+    line-height:1.7;
+    max-width:900px;
+    margin:0 auto;
   }
-  .hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; position:relative;}
+  .hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; justify-content:center;}
   .btn{
-    padding:15px 28px; font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
-    font-weight:700; border-radius:var(--radius); border:1px solid transparent;
+    padding:12px 28px; font-size:14px;
+    font-weight:600; border-radius:var(--radius); border:1px solid transparent;
     cursor:pointer; transition:transform .15s ease, background .2s;
     display:inline-flex; align-items:center; gap:10px;
   }
   .btn-primary{background:var(--accent); color:#fff;}
-  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-primary:hover{background:#c2185b;}
   .btn-ghost{border-color:var(--line); color:var(--ink);}
   .btn-ghost:hover{border-color:var(--ink-dim);}
 
-  .hero-meta{
-    display:flex; gap:40px; margin-top:64px; flex-wrap:wrap; position:relative;
-  }
-  .hero-meta div{border-left:2px solid var(--accent); padding-left:14px;}
-  .hero-meta .num{font-family:var(--font-display); font-size:26px;}
-  .hero-meta .lbl{font-size:12px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.08em;}
-
   /* ---------- CATALOGUE GRID ---------- */
-  .section{padding:100px 5vw;}
+  .section{padding:80px 5vw;}
   .section-head{
-    display:flex; justify-content:space-between; align-items:flex-end;
-    margin-bottom:56px; gap:30px; flex-wrap:wrap;
-    border-bottom:1px solid var(--line); padding-bottom:28px;
+    text-align:center;
+    margin-bottom:50px;
   }
-  .section-head h2{font-size:clamp(28px,4vw,44px);}
-  .section-head p{color:var(--ink-dim); max-width:44ch; font-size:14px;}
+  .section-head h2{font-size:44px; font-weight:600; color:#222;}
+  .section-head p{color:var(--ink-dim); max-width:700px; margin:10px auto 0; font-size:16px; line-height:1.7;}
 
   .cat-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-    gap:10px 20px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:40px;
   }
   .cat-card{
     background:none;
     border:none;
-    padding:34px 10px 26px;
+    width:240px;
     cursor:pointer;
     display:flex; flex-direction:column; align-items:center; text-align:center;
   }
@@ -178,7 +157,7 @@
     width:150px; height:158px;
     display:flex;
     transform:perspective(900px) rotateX(8deg) rotate(-3deg);
-    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.55));
+    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
   }
   .book-open .leaf{
     position:relative; width:50%; height:100%;
@@ -190,7 +169,6 @@
     position:absolute; left:10%; right:10%;
     background:rgba(20,22,26,.14); border-radius:1px;
   }
-  /* stacked page edge, fanning out under the top leaf */
   .book-open .stack{
     position:absolute; left:2px; right:2px; bottom:-3px; height:10px;
     background:repeating-linear-gradient(180deg,#dedad0 0 1px, #cfcabb 1px 2px);
@@ -208,7 +186,7 @@
     width:78px; height:172px;
     border-radius:2px 6px 6px 2px;
     transform:perspective(900px) rotateY(22deg) rotate(5deg);
-    box-shadow:12px 18px 26px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.06);
+    box-shadow:12px 18px 26px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.06);
     display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
     background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
   }
@@ -219,17 +197,21 @@
   }
 
   .cat-label{
-    font-family:var(--font-display); font-size:19px; text-transform:uppercase;
-    letter-spacing:0.02em; line-height:1.1;
-    opacity:0; transform:translateY(-4px);
-    transition:opacity .25s ease, transform .25s ease;
+    font-family:var(--font-display); font-size:17px;
+    font-weight:600;
+    line-height:1.2;
+    color:#333;
+    opacity:0;
+    transition:opacity .3s ease, color .3s ease;
   }
   .cat-card:hover .cat-label, .cat-card:focus-visible .cat-label{
-    opacity:1; transform:translateY(0);
+    opacity:1;
+    color:var(--accent);
   }
   .cat-label small{
-    display:block; margin-top:8px; font-family:var(--font-body); text-transform:none;
-    letter-spacing:0; font-size:12px; color:var(--ink-dim);
+    display:block; margin-top:6px;
+    font-weight:400;
+    font-size:13px; color:var(--ink-dim);
   }
 
   /* ---------- HOW TO USE ---------- */
@@ -238,8 +220,8 @@
     background:var(--bg-panel);
     display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px;
   }
-  .strip .step .num{font-family:var(--font-display); font-size:34px; color:var(--accent);}
-  .strip .step h4{font-size:15px; margin-top:8px; text-transform:uppercase; letter-spacing:0.05em;}
+  .strip .step .num{font-family:var(--font-display); font-size:34px; font-weight:600; color:var(--accent);}
+  .strip .step h4{font-size:15px; margin-top:8px; font-weight:600;}
   .strip .step p{font-size:13px; color:var(--ink-dim); margin-top:6px;}
 
   /* ---------- FOOTER ---------- */
@@ -250,23 +232,24 @@
 
   /* ---------- MODAL / FLIPBOOK ---------- */
   .modal-backdrop{
-    position:fixed; inset:0; background:rgba(6,7,8,0.92);
+    position:fixed; inset:0; background:rgba(0,0,0,0.8);
     display:none; align-items:center; justify-content:center;
     z-index:200; padding:20px;
   }
   .modal-backdrop.open{display:flex;}
   .modal{
-    width:min(1000px,96vw); background:var(--bg-panel);
+    width:min(1000px,96vw); background:#fff;
     border:1px solid var(--line); position:relative;
+    border-radius:var(--radius);
   }
   .modal-head{
     display:flex; justify-content:space-between; align-items:center;
     padding:18px 24px; border-bottom:1px solid var(--line);
   }
-  .modal-head h3{font-size:16px;}
+  .modal-head h3{font-size:16px; color:#333;}
   .modal-head .actions{display:flex; gap:12px; align-items:center;}
   .icon-btn{
-    background:none; border:1px solid var(--line); color:var(--ink);
+    background:none; border:1px solid var(--line); color:#555;
     width:34px; height:34px; border-radius:var(--radius); cursor:pointer;
     display:flex; align-items:center; justify-content:center; font-size:16px;
   }
@@ -275,7 +258,6 @@
     padding:30px 24px 12px; display:flex; justify-content:center; align-items:center;
     min-height:420px;
   }
-  /* ---- self-contained flip-book (no external library) ---- */
   #flipbook{
     position:relative;
     width:min(420px, 82vw);
@@ -289,7 +271,7 @@
     transform:rotateY(0deg);
     transform-origin:center center;
     transition:transform .45s cubic-bezier(.4,.1,.2,1), opacity .45s ease;
-    box-shadow:0 10px 34px rgba(0,0,0,0.5);
+    box-shadow:0 10px 34px rgba(0,0,0,0.15);
   }
   #flipbook .page.active{ opacity:1; pointer-events:auto; z-index:2; transform:rotateY(0deg); }
   #flipbook .page.exit-next{ opacity:0; transform:rotateY(-95deg); z-index:1; }
@@ -299,9 +281,8 @@
   .flip-controls{
     display:flex; justify-content:center; gap:18px; padding:16px 24px 26px; align-items:center;
   }
-  .flip-controls .page-indicator{font-size:12px; color:var(--ink-dim); letter-spacing:0.05em;}
+  .flip-controls .page-indicator{font-size:12px; color:var(--ink-dim);}
 
-  /* placeholder catalogue page look */
   .cat-page{
     width:100%; height:100%;
     background:#f4f2ec; color:#14161a;
@@ -314,16 +295,16 @@
     justify-content:center; align-items:flex-start;
     color:#f4f2ec;
   }
-  .cat-page .page-tag{font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8a8f96;}
+  .cat-page .page-tag{font-size:10px; text-transform:uppercase; color:#8a8f96;}
   .cat-page .grid{
     display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; flex:1;
   }
   .cat-page .swatch{
     background:#e3e0d6; border:1px solid #cfcbbe; display:flex; flex-direction:column; justify-content:flex-end; padding:8px;
   }
-  .cat-page .swatch small{font-size:9px; text-transform:uppercase; letter-spacing:0.06em; color:#5a5d63;}
+  .cat-page .swatch small{font-size:9px; text-transform:uppercase; color:#5a5d63;}
   .cat-page .swatch b{font-size:11px;}
-  .cat-page h4{font-family:var(--font-display); text-transform:uppercase; font-size:13px; margin-top:16px;}
+  .cat-page h4{font-family:var(--font-display); font-weight:600; font-size:13px; margin-top:16px;}
 </style>
 </head>
 <body>
@@ -340,18 +321,12 @@
 </header>
 
 <section class="hero" id="home">
-  <span class="eyebrow">Private Label · Sialkot, Pakistan</span>
-  <h1>The 2026<br>Product Catalogue</h1>
+  <h1>The 2026 Product Catalogue</h1>
   <p>Ski &amp; snow wear, streetwear, sportswear, bags and headwear — browse every
     category in-line, or download the full PDF pack to send to your team.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="#catalogue">Browse Catalogue</a>
     <a class="btn btn-ghost" href="https://coresportswears.com/contact-us/" target="_blank">Request A Quote</a>
-  </div>
-  <div class="hero-meta">
-    <div><div class="num">0</div><div class="lbl">MOQ on Trial Sample</div></div>
-    <div><div class="num">5–7</div><div class="lbl">Days Sample Turnaround</div></div>
-    <div><div class="num">15–25</div><div class="lbl">Days Bulk Delivery</div></div>
   </div>
 </section>
 
