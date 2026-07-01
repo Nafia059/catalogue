@@ -554,11 +554,21 @@ function openCatalogue(i) {
     autoCenter: true,
     duration: 600,
     pages: pages.length,
-    corners: 'bl,br,tl,tr',
     when: {
       turned: function(e, page) {
         updatePageIndicator(page, pages.length);
       }
+    }
+  });
+
+  newFlip.addEventListener('click', function(e) {
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const flip = $(this);
+    if (x < rect.width / 2) {
+      flip.turn('previous');
+    } else {
+      flip.turn('next');
     }
   });
 
