@@ -26,18 +26,18 @@
 -->
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
   :root{
     --bg: #ffffff;
-    --bg-panel: #f8f8f8;
+    --bg-panel: #f4f4f4;
     --ink: #333333;
     --ink-dim: #777777;
     --line: #e0e0e0;
-    --accent: #E91E63;
-    --accent-2: #2f6690;
+    --accent: #00991a;
+    --accent-2: #212529;
     --accent-ink: #ffffff;
     --radius: 4px;
-    --font-display: 'Open Sans', sans-serif;
+    --font-display: 'Poppins', sans-serif;
     --font-body: 'Open Sans', sans-serif;
   }
 
@@ -76,16 +76,16 @@
   .logo{
     font-family:var(--font-display);
     font-size:22px;
-    font-weight:600;
-    color:#333;
+    font-weight:700;
+    color:var(--accent);
   }
   .logo span{color:var(--accent);}
-  nav.links{display:flex; gap:32px; font-size:13px; font-weight:600;}
-  nav.links a{color:var(--ink-dim); transition:color .2s;}
+  nav.links{display:flex; gap:32px; font-size:12px; font-weight:600; text-transform:uppercase;}
+  nav.links a{color:#222529; transition:color .2s;}
   nav.links a:hover{color:var(--accent);}
   .nav-cta{
     padding:10px 20px; background:var(--accent); color:#fff;
-    font-size:12px; font-weight:600;
+    font-size:12px; font-weight:600; text-transform:uppercase;
     border-radius:var(--radius);
   }
   @media (max-width:800px){ nav.links{display:none;} }
@@ -97,9 +97,9 @@
   }
   .hero h1{
     font-size:44px;
-    font-weight:600;
+    font-weight:700;
     margin-bottom:15px;
-    color:#222;
+    color:#222529;
   }
   .hero p{
     color:var(--ink-dim);
@@ -126,7 +126,7 @@
     text-align:center;
     margin-bottom:50px;
   }
-  .section-head h2{font-size:44px; font-weight:600; color:#222;}
+  .section-head h2{font-size:44px; font-weight:700; color:#222529;}
   .section-head p{color:var(--ink-dim); max-width:700px; margin:10px auto 0; font-size:16px; line-height:1.7;}
 
   .cat-grid{
@@ -195,12 +195,12 @@
     font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
     color:rgba(255,255,255,.92); text-transform:uppercase;
   }
-
   .cat-label{
-    font-family:var(--font-display); font-size:17px;
+    font-family:var(--font-display);
+    font-size:17px;
     font-weight:600;
     line-height:1.2;
-    color:#333;
+    color:#222529;
     opacity:0;
     transition:opacity .3s ease, color .3s ease;
   }
