@@ -121,54 +121,100 @@
 
   .book-scene{
     position:relative;
-    width:210px; height:180px;
+    width:210px; height:195px;
     margin-bottom:16px;
-    transition:transform .35s ease;
+    transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+    perspective:1000px;
   }
-  .cat-card:hover .book-scene{ transform:translateY(-10px) scale(1.03); }
+  .cat-card:hover .book-scene{ transform:translateY(-12px) scale(1.05); }
+
+  .book-spine{
+    position:absolute; left:0; bottom:10px;
+    width:12px; height:165px;
+    background:linear-gradient(90deg, rgba(0,0,0,.3), rgba(0,0,0,.08) 40%, rgba(0,0,0,.15));
+    border-radius:4px 2px 2px 4px;
+    z-index:2;
+    transform:perspective(900px) rotateX(6deg) rotateY(-8deg);
+    transform-origin:left center;
+  }
 
   .book-open{
-    position:absolute; left:6px; bottom:6px;
-    width:150px; height:158px;
+    position:absolute; left:8px; bottom:10px;
+    width:142px; height:158px;
     display:flex;
-    transform:perspective(900px) rotateX(8deg) rotate(-3deg);
-    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
+    transform:perspective(900px) rotateX(6deg) rotateY(-4deg);
+    filter:drop-shadow(8px 16px 18px rgba(0,0,0,.25));
+    transform-origin:left center;
   }
   .book-open .leaf{
     position:relative; width:50%; height:100%;
-    background:linear-gradient(100deg,#f7f5ef,#e8e4d6);
+    background:linear-gradient(105deg,#faf8f0 0%,#f0ecdc 40%,#e8e3d0 100%);
+    overflow:hidden;
   }
-  .book-open .leaf:first-child{ border-radius:3px 0 0 3px; box-shadow:inset -8px 0 14px -10px rgba(0,0,0,.3); }
-  .book-open .leaf:last-child{ border-radius:0 3px 3px 0; box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.3); }
+  .book-open .leaf::before{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.02) 0%, transparent 20%, transparent 80%, rgba(0,0,0,.04) 100%);
+    pointer-events:none;
+    z-index:1;
+  }
+  .book-open .leaf:first-child{
+    border-radius:4px 0 0 4px;
+    box-shadow:inset -10px 0 18px -12px rgba(0,0,0,.25);
+    transform-origin:right center;
+    transform:perspective(400px) rotateY(-1deg);
+  }
+  .book-open .leaf:last-child{
+    border-radius:0 4px 4px 0;
+    box-shadow:inset 10px 0 18px -12px rgba(0,0,0,.2);
+    transform-origin:left center;
+    transform:perspective(400px) rotateY(1deg);
+  }
   .book-open .leaf .shot{
-    position:absolute; left:10%; right:10%;
-    background:rgba(20,22,26,.14); border-radius:1px;
+    position:absolute; left:12%; right:12%;
+    background:rgba(20,22,26,.1); border-radius:2px;
+    z-index:2;
   }
   .book-open .stack{
-    position:absolute; left:2px; right:2px; bottom:-3px; height:10px;
-    background:repeating-linear-gradient(180deg,#dedad0 0 1px, #cfcabb 1px 2px);
-    border-radius:0 0 3px 3px;
-    z-index:-1;
+    position:absolute; left:-2px; right:-2px; bottom:-4px; height:14px;
+    background:repeating-linear-gradient(180deg,#e0dbcc 0px 1px, #d5cfbd 1px 2px);
+    border-radius:0 0 4px 4px;
+    z-index:0;
+    box-shadow:0 2px 4px rgba(0,0,0,.08);
   }
   .book-open .ribbon{
-    position:absolute; top:-4px; left:calc(50% - 5px); width:10px; height:26px;
-    background:var(--accent); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
-    z-index:3;
+    position:absolute; top:-6px; left:calc(50% - 5px); width:10px; height:28px;
+    background:var(--accent); clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%);
+    z-index:5; filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));
   }
 
   .book-cover{
-    position:absolute; right:0; bottom:0;
-    width:78px; height:172px;
+    position:absolute; right:-2px; bottom:8px;
+    width:76px; height:172px;
     border-radius:2px 6px 6px 2px;
-    transform:perspective(900px) rotateY(22deg) rotate(5deg);
-    box-shadow:12px 18px 26px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.06);
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
-    background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
+    transform:perspective(900px) rotateY(20deg) rotate(4deg);
+    transform-origin:left center;
+    box-shadow:10px 16px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.12);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:14px;
+    background-image:linear-gradient(150deg, rgba(255,255,255,.18) 0%, transparent 50%, rgba(0,0,0,.2) 100%);
+    position:relative;
+    overflow:hidden;
+  }
+  .book-cover::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:rgba(255,255,255,.12);
+    border-radius:2px 6px 0 0;
   }
   .book-cover .code{
     writing-mode:vertical-rl;
-    font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
+    font-family:var(--font-display); font-size:10px; letter-spacing:0.2em;
     color:rgba(255,255,255,.92); text-transform:uppercase;
+    text-shadow:0 1px 2px rgba(0,0,0,.2);
+  }
+  .book-cover .cover-accent{
+    width:30px; height:2px;
+    background:rgba(255,255,255,.25);
+    margin-bottom:8px;
+    border-radius:1px;
   }
 
   .cat-label{
@@ -295,6 +341,52 @@
     border-top:1px solid var(--line); flex-shrink:0;
   }
   .flip-controls .page-indicator{font-size:13px; color:var(--ink-dim);}
+
+  /* ---------- PAGE CURL CORNERS ---------- */
+  #flipbook .page{
+    position:relative;
+  }
+  #flipbook .page .corner-curl{
+    position:absolute;
+    width:32px; height:32px;
+    z-index:10;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  #flipbook .page .corner-curl.tr{ top:0; right:0; }
+  #flipbook .page .corner-curl.br{ bottom:0; right:0; }
+  #flipbook .page .corner-curl.tl{ top:0; left:0; }
+  #flipbook .page .corner-curl.bl{ bottom:0; left:0; }
+  #flipbook .page .corner-curl.tr::before{
+    content:''; position:absolute; top:0; right:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width:0 32px 32px 0;
+    border-color:transparent rgba(0,0,0,.04) transparent transparent;
+  }
+  #flipbook .page .corner-curl.br::before{
+    content:''; position:absolute; bottom:0; right:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width:32px 32px 0 0;
+    border-color:transparent rgba(0,0,0,.04) transparent transparent;
+  }
+  #flipbook .page .corner-curl.tl::before{
+    content:''; position:absolute; top:0; left:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width:32px 0 0 32px;
+    border-color:transparent transparent transparent rgba(0,0,0,.04);
+  }
+  #flipbook .page .corner-curl.bl::before{
+    content:''; position:absolute; bottom:0; left:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width:0 0 32px 32px;
+    border-color:transparent transparent rgba(0,0,0,.04) transparent;
+  }
+  #flipbook .page:hover .corner-curl{ opacity:1; }
 </style>
 </head>
 <body>
@@ -489,6 +581,7 @@ CATEGORIES.forEach((cat, i) => {
   card.className = 'cat-card';
   card.innerHTML = `
     <div class="book-scene">
+      <div class="book-spine"></div>
       <div class="book-open">
         <div class="ribbon"></div>
         <div class="leaf">
@@ -502,18 +595,27 @@ CATEGORIES.forEach((cat, i) => {
         <div class="stack"></div>
       </div>
       <div class="book-cover" style="background:${cat.color}">
+        <div class="cover-accent"></div>
         <span class="code">${cat.code}</span>
       </div>
-    </div>
-    <div class="cat-label" style="color:${cat.color}">
-      ${cat.name}
-      <small>Catalogue &mdash; tap to view</small>
     </div>`;
   card.tabIndex = 0;
   card.addEventListener('click', () => openCatalogue(i));
   card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openCatalogue(i); });
   grid.appendChild(card);
 });
+
+function getSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function addCornerCurls(pageEl) {
+  ['tr','br','tl','bl'].forEach(pos => {
+    const curl = document.createElement('div');
+    curl.className = 'corner-curl ' + pos;
+    pageEl.appendChild(curl);
+  });
+}
 
 const backdrop = document.getElementById('modalBackdrop');
 const flipEl = document.getElementById('flipbook');
@@ -523,8 +625,9 @@ const prevBtn = document.getElementById('prevPageBtn');
 const nextBtn = document.getElementById('nextPageBtn');
 const closeBtn = document.getElementById('closeModalBtn');
 const downloadBtn = document.getElementById('downloadPdfBtn');
+let currentPageNum = 1;
 
-function openCatalogue(i) {
+function openCatalogue(i, pageNum) {
   currentCatIndex = i;
   const cat = CATEGORIES[i];
   modalTitle.textContent = cat.name + ' — Catalogue';
@@ -545,8 +648,12 @@ function openCatalogue(i) {
     div.style.background = p.bg;
     div.style.color = p.color;
     div.innerHTML = p.html;
+    addCornerCurls(div);
     newFlip.appendChild(div);
   });
+
+  const targetPage = pageNum || 1;
+  currentPageNum = targetPage;
 
   $(newFlip).turn({
     width: 800,
@@ -554,15 +661,22 @@ function openCatalogue(i) {
     autoCenter: true,
     duration: 600,
     pages: pages.length,
+    page: targetPage,
+    corners: 'bl,br,tl,tr',
     when: {
       turned: function(e, page) {
+        currentPageNum = page;
         updatePageIndicator(page, pages.length);
+        const slug = getSlug(cat.name);
+        history.replaceState(null, '', `#${slug}/page${page}`);
       }
     }
   });
 
   backdrop.classList.add('open');
-  updatePageIndicator(1, pages.length);
+  updatePageIndicator(targetPage, pages.length);
+  const slug = getSlug(cat.name);
+  history.replaceState(null, '', `#${slug}/page${targetPage}`);
 }
 
 function updatePageIndicator(page, total) {
@@ -605,7 +719,24 @@ function closeFlipbook() {
   if (f) {
     try { f.turn('destroy'); } catch(e) {}
   }
+  history.replaceState(null, '', window.location.pathname);
 }
+
+function initFromHash() {
+  const hash = location.hash.slice(1);
+  if (!hash) return;
+  const match = hash.match(/^(.+)\/page(\d+)$/);
+  if (match) {
+    const slug = match[1];
+    const page = parseInt(match[2]) || 1;
+    const idx = CATEGORIES.findIndex(c => getSlug(c.name) === slug);
+    if (idx >= 0) {
+      setTimeout(() => openCatalogue(idx, page), 300);
+    }
+  }
+}
+initFromHash();
+window.addEventListener('hashchange', initFromHash);
 
 downloadBtn.addEventListener('click', async () => {
   const cat = CATEGORIES[currentCatIndex];
