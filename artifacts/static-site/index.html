@@ -482,7 +482,6 @@ function getPages(cat) {
 }
 
 let currentCatIndex = 0;
-let isTurnInit = false;
 
 const grid = document.getElementById('catGrid');
 CATEGORIES.forEach((cat, i) => {
@@ -530,13 +529,15 @@ function openCatalogue(i) {
   const cat = CATEGORIES[i];
   modalTitle.textContent = cat.name + ' — Catalogue';
 
-  if (isTurnInit) {
-    $(flipEl).turn('destroy');
-    isTurnInit = false;
-  }
-  flipEl.innerHTML = '';
-  const pages = getPages(cat);
+  const wrap = document.querySelector('.flip-wrap');
+  const oldFlip = document.getElementById('flipbook');
+  if (oldFlip) oldFlip.remove();
 
+  const newFlip = document.createElement('div');
+  newFlip.id = 'flipbook';
+  wrap.appendChild(newFlip);
+
+  const pages = getPages(cat);
   pages.forEach((p, idx) => {
     const div = document.createElement('div');
     div.className = 'page';
@@ -544,10 +545,10 @@ function openCatalogue(i) {
     div.style.background = p.bg;
     div.style.color = p.color;
     div.innerHTML = p.html;
-    flipEl.appendChild(div);
+    newFlip.appendChild(div);
   });
 
-  $(flipEl).turn({
+  $(newFlip).turn({
     width: 800,
     height: 560,
     autoCenter: true,
@@ -559,7 +560,6 @@ function openCatalogue(i) {
       }
     }
   });
-  isTurnInit = true;
 
   backdrop.classList.add('open');
   updatePageIndicator(1, pages.length);
@@ -570,18 +570,27 @@ function updatePageIndicator(page, total) {
   pageIndicator.textContent = `Page ${display} / ${total}`;
 }
 
+function getFlip() {
+  const el = document.getElementById('flipbook');
+  return el ? $(el) : null;
+}
+
 prevBtn.addEventListener('click', () => {
-  if (isTurnInit) $(flipEl).turn('previous');
+  const f = getFlip();
+  if (f) f.turn('previous');
 });
 
 nextBtn.addEventListener('click', () => {
-  if (isTurnInit) $(flipEl).turn('next');
+  const f = getFlip();
+  if (f) f.turn('next');
 });
 
 document.addEventListener('keydown', (e) => {
   if (!backdrop.classList.contains('open')) return;
-  if (e.key === 'ArrowRight') $(flipEl).turn('next');
-  if (e.key === 'ArrowLeft') $(flipEl).turn('previous');
+  const f = getFlip();
+  if (!f) return;
+  if (e.key === 'ArrowRight') f.turn('next');
+  if (e.key === 'ArrowLeft') f.turn('previous');
   if (e.key === 'Escape') closeFlipbook();
 });
 
@@ -592,8 +601,10 @@ backdrop.addEventListener('click', (e) => {
 
 function closeFlipbook() {
   backdrop.classList.remove('open');
-  if (isTurnInit) $(flipEl).turn('destroy');
-  isTurnInit = false;
+  const f = getFlip();
+  if (f) {
+    try { f.turn('destroy'); } catch(e) {}
+  }
 }
 
 downloadBtn.addEventListener('click', async () => {
