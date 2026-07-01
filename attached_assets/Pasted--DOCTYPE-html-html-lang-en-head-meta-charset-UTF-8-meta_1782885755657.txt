@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Sportswears — Catalogue</title>
+
+<!--
+  ============================================================================
+  CORE SPORTSWEARS — CATALOGUE PAGE TEMPLATE
+  ============================================================================
+  Modelled on the kbspk.com "flipbook" catalogue pattern, rebuilt for
+  Core Sportswears' brand (Sialkot manufacturer, sportswear/ski/streetwear).
+
+  HOW TO CUSTOMIZE:
+  1. Replace CATEGORY DATA in the <script> at the bottom — each category
+     needs: name, code, tagline, coverColor, pdfUrl, and an array of page
+     image URLs (export each PDF catalogue page as a JPG/PNG, ~1000px wide).
+  2. Swap "pdfUrl" with the real hosted PDF (e.g. /catalogues/ski-2026.pdf)
+     so the "Download PDF" button works.
+  3. Replace the logo text block with an <img> of the real logo if you want.
+  4. Colors/fonts live in the :root CSS variables — edit there to re-theme.
+  ============================================================================
+-->
+
+<style>
+  :root{
+    --bg: #0e1013;
+    --bg-panel: #16191d;
+    --ink: #f4f2ec;
+    --ink-dim: #9a9ea6;
+    --line: #2a2e34;
+    --accent: #ff4b2b;      /* athletic red-orange */
+    --accent-2: #2f6690;    /* ski blue */
+    --accent-ink: #0e1013;
+    --radius: 2px;
+    --font-display: 'Oswald', 'Arial Narrow', sans-serif;
+    --font-body: 'Inter', -apple-system, Segoe UI, sans-serif;
+  }
+
+  @font-face{ /* fallback stack only, no external font risk */ }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,.display{
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    font-weight:700;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  img{max-width:100%; display:block;}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5vw;
+    background:rgba(14,16,19,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:var(--font-display);
+    font-size:22px;
+    letter-spacing:0.06em;
+    font-weight:700;
+  }
+  .logo span{color:var(--accent);}
+  nav.links{display:flex; gap:32px; font-size:13px; letter-spacing:0.08em; text-transform:uppercase;}
+  nav.links a{color:var(--ink-dim); transition:color .2s;}
+  nav.links a:hover{color:var(--ink);}
+  .nav-cta{
+    padding:10px 20px; background:var(--accent); color:#fff;
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
+    border-radius:var(--radius);
+  }
+  @media (max-width:800px){ nav.links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:120px 5vw 90px;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      repeating-linear-gradient(115deg, transparent 0 78px, rgba(255,75,43,0.06) 78px 80px),
+      repeating-linear-gradient(115deg, transparent 0 78px, rgba(47,102,144,0.05) 79px 81px);
+    pointer-events:none;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:12px; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:22px; position:relative;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--accent);}
+  .hero h1{
+    font-size:clamp(38px, 7vw, 88px);
+    line-height:0.98;
+    max-width:16ch;
+    position:relative;
+  }
+  .hero p{
+    margin-top:26px; max-width:52ch; color:var(--ink-dim); font-size:16px;
+    position:relative;
+  }
+  .hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; position:relative;}
+  .btn{
+    padding:15px 28px; font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    font-weight:700; border-radius:var(--radius); border:1px solid transparent;
+    cursor:pointer; transition:transform .15s ease, background .2s;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{transform:translateY(-2px);}
+  .btn-ghost{border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink-dim);}
+
+  .hero-meta{
+    display:flex; gap:40px; margin-top:64px; flex-wrap:wrap; position:relative;
+  }
+  .hero-meta div{border-left:2px solid var(--accent); padding-left:14px;}
+  .hero-meta .num{font-family:var(--font-display); font-size:26px;}
+  .hero-meta .lbl{font-size:12px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.08em;}
+
+  /* ---------- CATALOGUE GRID ---------- */
+  .section{padding:100px 5vw;}
+  .section-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:56px; gap:30px; flex-wrap:wrap;
+    border-bottom:1px solid var(--line); padding-bottom:28px;
+  }
+  .section-head h2{font-size:clamp(28px,4vw,44px);}
+  .section-head p{color:var(--ink-dim); max-width:44ch; font-size:14px;}
+
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:10px 20px;
+  }
+  .cat-card{
+    background:none;
+    border:none;
+    padding:34px 10px 26px;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+  }
+
+  /* ---- 3D book mockup (open book + standing cover) ---- */
+  .book-scene{
+    position:relative;
+    width:210px; height:180px;
+    margin-bottom:16px;
+    transition:transform .35s ease;
+  }
+  .cat-card:hover .book-scene{ transform:translateY(-10px) scale(1.03); }
+
+  .book-open{
+    position:absolute; left:6px; bottom:6px;
+    width:150px; height:158px;
+    display:flex;
+    transform:perspective(900px) rotateX(8deg) rotate(-3deg);
+    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.55));
+  }
+  .book-open .leaf{
+    position:relative; width:50%; height:100%;
+    background:linear-gradient(100deg,#f7f5ef,#e8e4d6);
+  }
+  .book-open .leaf:first-child{ border-radius:3px 0 0 3px; box-shadow:inset -8px 0 14px -10px rgba(0,0,0,.3); }
+  .book-open .leaf:last-child{ border-radius:0 3px 3px 0; box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.3); }
+  .book-open .leaf .shot{
+    position:absolute; left:10%; right:10%;
+    background:rgba(20,22,26,.14); border-radius:1px;
+  }
+  /* stacked page edge, fanning out under the top leaf */
+  .book-open .stack{
+    position:absolute; left:2px; right:2px; bottom:-3px; height:10px;
+    background:repeating-linear-gradient(180deg,#dedad0 0 1px, #cfcabb 1px 2px);
+    border-radius:0 0 3px 3px;
+    z-index:-1;
+  }
+  .book-open .ribbon{
+    position:absolute; top:-4px; left:calc(50% - 5px); width:10px; height:26px;
+    background:var(--accent); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
+    z-index:3;
+  }
+
+  .book-cover{
+    position:absolute; right:0; bottom:0;
+    width:78px; height:172px;
+    border-radius:2px 6px 6px 2px;
+    transform:perspective(900px) rotateY(22deg) rotate(5deg);
+    box-shadow:12px 18px 26px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.06);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
+    background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
+  }
+  .book-cover .code{
+    writing-mode:vertical-rl;
+    font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
+    color:rgba(255,255,255,.92); text-transform:uppercase;
+  }
+
+  .cat-label{
+    font-family:var(--font-display); font-size:19px; text-transform:uppercase;
+    letter-spacing:0.02em; line-height:1.1;
+    opacity:0; transform:translateY(-4px);
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .cat-card:hover .cat-label, .cat-card:focus-visible .cat-label{
+    opacity:1; transform:translateY(0);
+  }
+  .cat-label small{
+    display:block; margin-top:8px; font-family:var(--font-body); text-transform:none;
+    letter-spacing:0; font-size:12px; color:var(--ink-dim);
+  }
+
+  /* ---------- HOW TO USE ---------- */
+  .strip{
+    padding:70px 5vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px;
+  }
+  .strip .step .num{font-family:var(--font-display); font-size:34px; color:var(--accent);}
+  .strip .step h4{font-size:15px; margin-top:8px; text-transform:uppercase; letter-spacing:0.05em;}
+  .strip .step p{font-size:13px; color:var(--ink-dim); margin-top:6px;}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:60px 5vw 40px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-dim);}
+  footer .foot-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
+  footer .foot-top a{display:block; margin-top:8px; color:var(--ink);}
+  footer .bottom{border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+  /* ---------- MODAL / FLIPBOOK ---------- */
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(6,7,8,0.92);
+    display:none; align-items:center; justify-content:center;
+    z-index:200; padding:20px;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    width:min(1000px,96vw); background:var(--bg-panel);
+    border:1px solid var(--line); position:relative;
+  }
+  .modal-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 24px; border-bottom:1px solid var(--line);
+  }
+  .modal-head h3{font-size:16px;}
+  .modal-head .actions{display:flex; gap:12px; align-items:center;}
+  .icon-btn{
+    background:none; border:1px solid var(--line); color:var(--ink);
+    width:34px; height:34px; border-radius:var(--radius); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+  }
+  .icon-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .flip-wrap{
+    padding:30px 24px 12px; display:flex; justify-content:center; align-items:center;
+    min-height:420px;
+  }
+  /* ---- self-contained flip-book (no external library) ---- */
+  #flipbook{
+    position:relative;
+    width:min(420px, 82vw);
+    height:min(560px, 60vh);
+    perspective:1800px;
+  }
+  #flipbook .page{
+    position:absolute; inset:0;
+    opacity:0;
+    pointer-events:none;
+    transform:rotateY(0deg);
+    transform-origin:center center;
+    transition:transform .45s cubic-bezier(.4,.1,.2,1), opacity .45s ease;
+    box-shadow:0 10px 34px rgba(0,0,0,0.5);
+  }
+  #flipbook .page.active{ opacity:1; pointer-events:auto; z-index:2; transform:rotateY(0deg); }
+  #flipbook .page.exit-next{ opacity:0; transform:rotateY(-95deg); z-index:1; }
+  #flipbook .page.exit-prev{ opacity:0; transform:rotateY(95deg); z-index:1; }
+  #flipbook .page.enter-from-next{ opacity:0; transform:rotateY(95deg); }
+  #flipbook .page.enter-from-prev{ opacity:0; transform:rotateY(-95deg); }
+  .flip-controls{
+    display:flex; justify-content:center; gap:18px; padding:16px 24px 26px; align-items:center;
+  }
+  .flip-controls .page-indicator{font-size:12px; color:var(--ink-dim); letter-spacing:0.05em;}
+
+  /* placeholder catalogue page look */
+  .cat-page{
+    width:100%; height:100%;
+    background:#f4f2ec; color:#14161a;
+    display:flex; flex-direction:column;
+    padding:26px 22px;
+    font-family:var(--font-body);
+    overflow:hidden;
+  }
+  .cat-page.cover{
+    justify-content:center; align-items:flex-start;
+    color:#f4f2ec;
+  }
+  .cat-page .page-tag{font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8a8f96;}
+  .cat-page .grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; flex:1;
+  }
+  .cat-page .swatch{
+    background:#e3e0d6; border:1px solid #cfcbbe; display:flex; flex-direction:column; justify-content:flex-end; padding:8px;
+  }
+  .cat-page .swatch small{font-size:9px; text-transform:uppercase; letter-spacing:0.06em; color:#5a5d63;}
+  .cat-page .swatch b{font-size:11px;}
+  .cat-page h4{font-family:var(--font-display); text-transform:uppercase; font-size:13px; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">CORE <span>SPORTS</span>WEARS</div>
+  <nav class="links">
+    <a href="#home">Home</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#how">How It Works</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="nav-cta" href="https://api.whatsapp.com/send/?phone=923328624992" target="_blank">WhatsApp Us</a>
+</header>
+
+<section class="hero" id="home">
+  <span class="eyebrow">Private Label · Sialkot, Pakistan</span>
+  <h1>The 2026<br>Product Catalogue</h1>
+  <p>Ski &amp; snow wear, streetwear, sportswear, bags and headwear — browse every
+    category in-line, or download the full PDF pack to send to your team.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#catalogue">Browse Catalogue</a>
+    <a class="btn btn-ghost" href="https://coresportswears.com/contact-us/" target="_blank">Request A Quote</a>
+  </div>
+  <div class="hero-meta">
+    <div><div class="num">0</div><div class="lbl">MOQ on Trial Sample</div></div>
+    <div><div class="num">5–7</div><div class="lbl">Days Sample Turnaround</div></div>
+    <div><div class="num">15–25</div><div class="lbl">Days Bulk Delivery</div></div>
+  </div>
+</section>
+
+<section class="section" id="catalogue">
+  <div class="section-head">
+    <div>
+      <h2>Explore Our Catalogue</h2>
+      <p>Tap a category to flip through the collection online, or grab the PDF for offline reference.</p>
+    </div>
+  </div>
+
+  <div class="cat-grid" id="catGrid"><!-- cards injected by JS --></div>
+</section>
+
+<section class="strip" id="how">
+  <div class="step"><div class="num">01</div><h4>Open a Catalogue</h4><p>Click any category card to launch the flip-through viewer.</p></div>
+  <div class="step"><div class="num">02</div><h4>Browse Pages</h4><p>Use the arrows, or click a page corner, to flip through.</p></div>
+  <div class="step"><div class="num">03</div><h4>Download PDF</h4><p>Grab the full catalogue PDF from the viewer header.</p></div>
+  <div class="step"><div class="num">04</div><h4>Send Your Brief</h4><p>WhatsApp us your tech pack, logo or reference image.</p></div>
+</section>
+
+<footer id="contact">
+  <div class="foot-top">
+    <div>
+      <div class="logo">CORE <span>SPORTS</span>WEARS</div>
+      <a href="mailto:coresportswears@gmail.com">coresportswears@gmail.com</a>
+      <a href="tel:+923398624992">+92 339 8624992</a>
+      <a href="#">Sadra Badra Town, Daak Wala Stop Daska Road, Sialkot, Pakistan</a>
+    </div>
+    <div>
+      <a href="https://coresportswears.com/product-category/ski-snow-wear/">Ski &amp; Snow Wear</a>
+      <a href="https://coresportswears.com/product-category/custom-streetwear/">Streetwear</a>
+      <a href="https://coresportswears.com/product-category/custom-sportswear/">Sportswear</a>
+      <a href="https://coresportswears.com/product-category/custom-bags/">Bags</a>
+    </div>
+  </div>
+  <div class="bottom">
+    <span>Core Sportswears © 2026 All Rights Reserved</span>
+    <span>Catalogue template</span>
+  </div>
+</footer>
+
+<!-- ---------- FLIPBOOK MODAL ---------- -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Catalogue</h3>
+      <div class="actions">
+        <a class="icon-btn" id="downloadBtn" href="#" target="_blank" title="Download PDF">⭳</a>
+        <button class="icon-btn" id="closeModal" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="flip-wrap"><div id="flipbook"></div></div>
+    <div class="flip-controls">
+      <button class="icon-btn" id="prevPage">‹</button>
+      <span class="page-indicator" id="pageIndicator">Page 1</span>
+      <button class="icon-btn" id="nextPage">›</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CATEGORY DATA — edit this array to match real catalogues.
+   pages: array of image URLs (export each PDF page as an image).
+   pdfUrl: link to the actual PDF file for the download button.
+   ============================================================ */
+const CATEGORIES = [
+  {
+    code: "CAT-01",
+    name: "Ski & Snow Wear",
+    desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.",
+    color: "#2f6690",
+    pdfUrl: "#",
+    pages: buildPages("Ski & Snow Wear", "#2f6690")
+  },
+  {
+    code: "CAT-02",
+    name: "Streetwear",
+    desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",
+    color: "#ff4b2b",
+    pdfUrl: "#",
+    pages: buildPages("Streetwear", "#ff4b2b")
+  },
+  {
+    code: "CAT-03",
+    name: "Sportswear",
+    desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",
+    color: "#1f8a5b",
+    pdfUrl: "#",
+    pages: buildPages("Sportswear", "#1f8a5b")
+  },
+  {
+    code: "CAT-04",
+    name: "Bags",
+    desc: "Duffel bags, sports backpacks, fanny bags & tote bags.",
+    color: "#8a5cf6",
+    pdfUrl: "#",
+    pages: buildPages("Bags", "#8a5cf6")
+  },
+  {
+    code: "CAT-05",
+    name: "Headwear & Accessories",
+    desc: "Caps, beanies, patches, sleeves, socks & custom trims.",
+    color: "#d1a13d",
+    pdfUrl: "#",
+    pages: buildPages("Headwear & Accessories", "#d1a13d")
+  },
+];
+
+/* Generates placeholder page HTML strings — swap these for real
+   <img src="..."> pages once you have exported catalogue images. */
+function buildPages(name, color){
+  const cover = `
+    <div class="cat-page cover" style="background:${color}">
+      <div class="page-tag" style="color:rgba(255,255,255,.7)">Core Sportswears · 2026</div>
+      <h4 style="font-size:26px;margin-top:40px;color:#fff;">${name}</h4>
+      <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:10px;">Wholesale &amp; Private Label Catalogue</div>
+    </div>`;
+  const inner = (n)=>`
+    <div class="cat-page">
+      <div class="page-tag">${name} — Page ${n}</div>
+      <div class="grid">
+        <div class="swatch" style="height:110px"><small>Style</small><b>${name.split(' ')[0].toUpperCase()}-0${n}A</b></div>
+        <div class="swatch" style="height:110px"><small>Style</small><b>${name.split(' ')[0].toUpperCase()}-0${n}B</b></div>
+        <div class="swatch" style="height:70px"><small>Fabric</small><b>Replace with photo</b></div>
+        <div class="swatch" style="height:70px"><small>Fabric</small><b>Replace with photo</b></div>
+      </div>
+      <h4>Customization: Print · Embroidery · Labels</h4>
+    </div>`;
+  const back = `
+    <div class="cat-page cover" style="background:#14161a">
+      <div class="page-tag" style="color:#8a8f96">Thank You</div>
+      <h4 style="font-size:22px;margin-top:40px;color:#fff;">Let's Build Your Collection</h4>
+      <div style="font-size:12px;color:#9a9ea6;margin-top:10px;">WhatsApp +92 339 8624992</div>
+    </div>`;
+  return [cover, inner(1), inner(2), inner(3), back];
+}
+
+/* ---------- render category cards ---------- */
+const grid = document.getElementById('catGrid');
+CATEGORIES.forEach((cat, i) => {
+  const card = document.createElement('div');
+  card.className = 'cat-card';
+  card.innerHTML = `
+    <div class="book-scene">
+      <div class="book-open">
+        <div class="ribbon"></div>
+        <div class="leaf">
+          <div class="shot" style="top:14%; height:26%"></div>
+          <div class="shot" style="top:46%; height:38%"></div>
+        </div>
+        <div class="leaf">
+          <div class="shot" style="top:14%; height:40%"></div>
+          <div class="shot" style="top:60%; height:24%"></div>
+        </div>
+        <div class="stack"></div>
+      </div>
+      <div class="book-cover" style="background:${cat.color}">
+        <span class="code">${cat.code}</span>
+      </div>
+    </div>
+    <div class="cat-label" style="color:${cat.color}">
+      ${cat.name}
+      <small>Catalogue — tap to view</small>
+    </div>`;
+  card.tabIndex = 0;
+  card.addEventListener('click', () => openCatalogue(i));
+  card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openCatalogue(i); });
+  grid.appendChild(card);
+});
+
+/* ---------- flipbook modal logic (self-contained, no external library) ---------- */
+const backdrop = document.getElementById('modalBackdrop');
+const flipEl = document.getElementById('flipbook');
+const modalTitle = document.getElementById('modalTitle');
+const downloadBtn = document.getElementById('downloadBtn');
+const pageIndicator = document.getElementById('pageIndicator');
+
+let activePages = [];   // DOM elements for the currently open catalogue
+let currentIndex = 0;
+let isAnimating = false;
+
+function openCatalogue(i){
+  const cat = CATEGORIES[i];
+  modalTitle.textContent = cat.name + ' — Catalogue';
+  downloadBtn.href = cat.pdfUrl;
+
+  flipEl.innerHTML = '';
+  activePages = cat.pages.map((html, idx) => {
+    const page = document.createElement('div');
+    page.className = 'page' + (idx === 0 ? ' active' : '');
+    page.innerHTML = html;
+    flipEl.appendChild(page);
+    return page;
+  });
+  currentIndex = 0;
+  pageIndicator.textContent = `Page 1 / ${activePages.length}`;
+
+  backdrop.classList.add('open');
+}
+
+function goToPage(newIndex, direction){
+  if (isAnimating) return;
+  if (newIndex < 0 || newIndex >= activePages.length) return;
+  isAnimating = true;
+
+  const current = activePages[currentIndex];
+  const next = activePages[newIndex];
+
+  current.classList.remove('active');
+  current.classList.add(direction === 'next' ? 'exit-next' : 'exit-prev');
+
+  next.classList.add(direction === 'next' ? 'enter-from-next' : 'enter-from-prev');
+  void next.offsetWidth; // force reflow so the entering transform applies first
+
+  requestAnimationFrame(() => {
+    next.classList.remove('enter-from-next', 'enter-from-prev');
+    next.classList.add('active');
+  });
+
+  setTimeout(() => {
+    current.classList.remove('exit-next', 'exit-prev');
+    currentIndex = newIndex;
+    pageIndicator.textContent = `Page ${currentIndex + 1} / ${activePages.length}`;
+    isAnimating = false;
+  }, 460);
+}
+
+document.getElementById('nextPage').addEventListener('click', () => goToPage(currentIndex + 1, 'next'));
+document.getElementById('prevPage').addEventListener('click', () => goToPage(currentIndex - 1, 'prev'));
+
+document.getElementById('closeModal').addEventListener('click', () => {
+  backdrop.classList.remove('open');
+});
+backdrop.addEventListener('click', (e) => {
+  if (e.target === backdrop) backdrop.classList.remove('open');
+});
+document.addEventListener('keydown', (e) => {
+  if (!backdrop.classList.contains('open')) return;
+  if (e.key === 'ArrowRight') goToPage(currentIndex + 1, 'next');
+  if (e.key === 'ArrowLeft') goToPage(currentIndex - 1, 'prev');
+  if (e.key === 'Escape') backdrop.classList.remove('open');
+});
+</script>
+</body>
+</html>
