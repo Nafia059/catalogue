@@ -6,24 +6,11 @@
 <title>Core Sportswears — Catalogue</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4.1.0/turn.min.js"></script>
 
-<!--
-  ============================================================================
-  CORE SPORTSWEARS — CATALOGUE PAGE TEMPLATE
-  ============================================================================
-  Modelled on the kbspk.com "flipbook" catalogue pattern, rebuilt for
-  Core Sportswears' brand (Sialkot manufacturer, sportswear/ski/streetwear).
-
-  HOW TO CUSTOMIZE:
-  1. Replace CATEGORY DATA in the <script> at the bottom — each category
-     needs: name, code, tagline, coverColor, pdfUrl, and an array of page
-     image URLs (export each PDF catalogue page as a JPG/PNG, ~1000px wide).
-  2. Swap "pdfUrl" with the real hosted PDF (e.g. /catalogues/ski-2026.pdf)
-     so the "Download PDF" button works.
-  3. Replace the logo text block with an <img> of the real logo if you want.
-  4. Colors/fonts live in the :root CSS variables — edit there to re-theme.
-  ============================================================================
--->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
@@ -41,12 +28,8 @@
     --font-body: 'Open Sans', sans-serif;
   }
 
-  @font-face{ /* fallback stack only, no external font risk */ }
-
   *{box-sizing:border-box; margin:0; padding:0;}
-
   html{scroll-behavior:smooth;}
-
   body{
     background:var(--bg);
     color:var(--ink);
@@ -54,17 +37,13 @@
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
   }
-
   h1,h2,h3,.display{
     font-family:var(--font-display);
     font-weight:600;
   }
-
   a{color:inherit; text-decoration:none;}
-
   img{max-width:100%; display:block;}
 
-  /* ---------- NAV ---------- */
   header.nav{
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
@@ -79,7 +58,6 @@
     font-weight:700;
     color:var(--accent);
   }
-  .logo span{color:var(--accent);}
   nav.links{display:flex; gap:32px; font-size:12px; font-weight:600; text-transform:uppercase;}
   nav.links a{color:#222529; transition:color .2s;}
   nav.links a:hover{color:var(--accent);}
@@ -90,7 +68,6 @@
   }
   @media (max-width:800px){ nav.links{display:none;} }
 
-  /* ---------- HERO ---------- */
   .hero{
     text-align:center;
     padding:100px 5vw 60px;
@@ -116,11 +93,10 @@
     display:inline-flex; align-items:center; gap:10px;
   }
   .btn-primary{background:var(--accent); color:#fff;}
-  .btn-primary:hover{background:#c2185b;}
+  .btn-primary:hover{background:#008a18;}
   .btn-ghost{border-color:var(--line); color:var(--ink);}
   .btn-ghost:hover{border-color:var(--ink-dim);}
 
-  /* ---------- CATALOGUE GRID ---------- */
   .section{padding:80px 5vw;}
   .section-head{
     text-align:center;
@@ -143,7 +119,6 @@
     display:flex; flex-direction:column; align-items:center; text-align:center;
   }
 
-  /* ---- 3D book mockup (open book + standing cover) ---- */
   .book-scene{
     position:relative;
     width:210px; height:180px;
@@ -195,6 +170,7 @@
     font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
     color:rgba(255,255,255,.92); text-transform:uppercase;
   }
+
   .cat-label{
     font-family:var(--font-display);
     font-size:17px;
@@ -214,7 +190,6 @@
     font-size:13px; color:var(--ink-dim);
   }
 
-  /* ---------- HOW TO USE ---------- */
   .strip{
     padding:70px 5vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
     background:var(--bg-panel);
@@ -224,87 +199,102 @@
   .strip .step h4{font-size:15px; margin-top:8px; font-weight:600;}
   .strip .step p{font-size:13px; color:var(--ink-dim); margin-top:6px;}
 
-  /* ---------- FOOTER ---------- */
   footer{padding:60px 5vw 40px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-dim);}
   footer .foot-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
   footer .foot-top a{display:block; margin-top:8px; color:var(--ink);}
   footer .bottom{border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
 
-  /* ---------- MODAL / FLIPBOOK ---------- */
+  /* ---------- FLIPBOOK MODAL (turn.js) ---------- */
   .modal-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,0.8);
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
     display:none; align-items:center; justify-content:center;
     z-index:200; padding:20px;
   }
   .modal-backdrop.open{display:flex;}
   .modal{
-    width:min(1000px,96vw); background:#fff;
-    border:1px solid var(--line); position:relative;
-    border-radius:var(--radius);
+    width:min(1100px,96vw); background:#fff;
+    border-radius:var(--radius); position:relative;
+    display:flex; flex-direction:column;
+    max-height:95vh;
   }
   .modal-head{
     display:flex; justify-content:space-between; align-items:center;
-    padding:18px 24px; border-bottom:1px solid var(--line);
+    padding:14px 24px; border-bottom:1px solid var(--line);
+    flex-shrink:0;
   }
-  .modal-head h3{font-size:16px; color:#333;}
-  .modal-head .actions{display:flex; gap:12px; align-items:center;}
+  .modal-head h3{font-size:16px; color:#222529; font-weight:600;}
+  .modal-head .actions{display:flex; gap:10px; align-items:center;}
   .icon-btn{
     background:none; border:1px solid var(--line); color:#555;
     width:34px; height:34px; border-radius:var(--radius); cursor:pointer;
-    display:flex; align-items:center; justify-content:center; font-size:16px;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+    transition:all .2s;
   }
   .icon-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .icon-btn.download-btn{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .icon-btn.download-btn:hover{background:#008a18;}
+
   .flip-wrap{
-    padding:30px 24px 12px; display:flex; justify-content:center; align-items:center;
-    min-height:420px;
+    flex:1;
+    padding:20px;
+    display:flex; justify-content:center; align-items:center;
+    min-height:500px;
+    overflow:hidden;
+    background:#f0f0f0;
   }
   #flipbook{
+    width:800px;
+    height:560px;
     position:relative;
-    width:min(420px, 82vw);
-    height:min(560px, 60vh);
-    perspective:1800px;
   }
   #flipbook .page{
-    position:absolute; inset:0;
-    opacity:0;
-    pointer-events:none;
-    transform:rotateY(0deg);
-    transform-origin:center center;
-    transition:transform .45s cubic-bezier(.4,.1,.2,1), opacity .45s ease;
-    box-shadow:0 10px 34px rgba(0,0,0,0.15);
-  }
-  #flipbook .page.active{ opacity:1; pointer-events:auto; z-index:2; transform:rotateY(0deg); }
-  #flipbook .page.exit-next{ opacity:0; transform:rotateY(-95deg); z-index:1; }
-  #flipbook .page.exit-prev{ opacity:0; transform:rotateY(95deg); z-index:1; }
-  #flipbook .page.enter-from-next{ opacity:0; transform:rotateY(95deg); }
-  #flipbook .page.enter-from-prev{ opacity:0; transform:rotateY(-95deg); }
-  .flip-controls{
-    display:flex; justify-content:center; gap:18px; padding:16px 24px 26px; align-items:center;
-  }
-  .flip-controls .page-indicator{font-size:12px; color:var(--ink-dim);}
-
-  .cat-page{
     width:100%; height:100%;
-    background:#f4f2ec; color:#14161a;
-    display:flex; flex-direction:column;
-    padding:26px 22px;
+    background:#fff;
+    display:flex; align-items:center; justify-content:center;
     font-family:var(--font-body);
-    overflow:hidden;
   }
-  .cat-page.cover{
-    justify-content:center; align-items:flex-start;
-    color:#f4f2ec;
+  #flipbook .page .page-content{
+    padding:30px;
+    text-align:center;
+    width:100%;
   }
-  .cat-page .page-tag{font-size:10px; text-transform:uppercase; color:#8a8f96;}
-  .cat-page .grid{
-    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; flex:1;
+  #flipbook .page .page-content h2{
+    font-size:28px;
+    margin-bottom:15px;
+    color:#222529;
   }
-  .cat-page .swatch{
-    background:#e3e0d6; border:1px solid #cfcbbe; display:flex; flex-direction:column; justify-content:flex-end; padding:8px;
+  #flipbook .page .page-content p{
+    color:#666;
+    font-size:14px;
+    line-height:1.6;
   }
-  .cat-page .swatch small{font-size:9px; text-transform:uppercase; color:#5a5d63;}
-  .cat-page .swatch b{font-size:11px;}
-  .cat-page h4{font-family:var(--font-display); font-weight:600; font-size:13px; margin-top:16px;}
+  #flipbook .page .page-content .page-img{
+    max-width:80%;
+    max-height:350px;
+    margin:15px auto;
+    object-fit:contain;
+  }
+  #flipbook .page.cover-page{
+    background:#222529;
+    color:#fff;
+  }
+  #flipbook .page.cover-page .page-content h2{color:#fff;}
+  #flipbook .page.cover-page .page-content p{color:rgba(255,255,255,.7);}
+  #flipbook .page.hard-page{
+    background:#e8e4d6;
+    background-image:linear-gradient(135deg,#f7f5ef 0%,#e8e4d6 100%);
+  }
+  #flipbook .page-img-full{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .flip-controls{
+    display:flex; justify-content:center; gap:18px; padding:14px 24px 18px; align-items:center;
+    border-top:1px solid var(--line); flex-shrink:0;
+  }
+  .flip-controls .page-indicator{font-size:13px; color:var(--ink-dim);}
 </style>
 </head>
 <body>
@@ -334,16 +324,15 @@
   <div class="section-head">
     <div>
       <h2>Explore Our Catalogue</h2>
-      <p>Tap a category to flip through the collection online, or grab the PDF for offline reference.</p>
+      <p>Tap a category to flip through the collection online.</p>
     </div>
   </div>
-
-  <div class="cat-grid" id="catGrid"><!-- cards injected by JS --></div>
+  <div class="cat-grid" id="catGrid"></div>
 </section>
 
 <section class="strip" id="how">
-  <div class="step"><div class="num">01</div><h4>Open a Catalogue</h4><p>Click any category card to launch the flip-through viewer.</p></div>
-  <div class="step"><div class="num">02</div><h4>Browse Pages</h4><p>Use the arrows, or click a page corner, to flip through.</p></div>
+  <div class="step"><div class="num">01</div><h4>Open a Catalogue</h4><p>Click any category card to launch the flipbook viewer.</p></div>
+  <div class="step"><div class="num">02</div><h4>Browse Pages</h4><p>Click the page corners or use arrows to flip through.</p></div>
   <div class="step"><div class="num">03</div><h4>Download PDF</h4><p>Grab the full catalogue PDF from the viewer header.</p></div>
   <div class="step"><div class="num">04</div><h4>Send Your Brief</h4><p>WhatsApp us your tech pack, logo or reference image.</p></div>
 </section>
@@ -351,7 +340,7 @@
 <footer id="contact">
   <div class="foot-top">
     <div>
-      <div class="logo">CORE <span>SPORTS</span>WEARS</div>
+      <div class="logo">CORE SPORTSWEARS</div>
       <a href="mailto:coresportswears@gmail.com">coresportswears@gmail.com</a>
       <a href="tel:+923398624992">+92 339 8624992</a>
       <a href="#">Sadra Badra Town, Daak Wala Stop Daska Road, Sialkot, Pakistan</a>
@@ -364,37 +353,30 @@
     </div>
   </div>
   <div class="bottom">
-    <span>Core Sportswears © 2026 All Rights Reserved</span>
+    <span>Core Sportswears &copy; 2026 All Rights Reserved</span>
     <span>Catalogue template</span>
   </div>
 </footer>
 
-<!-- ---------- FLIPBOOK MODAL ---------- -->
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
     <div class="modal-head">
       <h3 id="modalTitle">Catalogue</h3>
       <div class="actions">
-        <button class="icon-btn" id="downloadBtn" title="Download PDF">⭳</button>
-        <button class="icon-btn" id="closeModal" title="Close">✕</button>
+        <button class="icon-btn download-btn" id="downloadPdfBtn" title="Download PDF"><i class="fas fa-download"></i></button>
+        <button class="icon-btn" id="closeModalBtn" title="Close"><i class="fas fa-times"></i></button>
       </div>
     </div>
     <div class="flip-wrap"><div id="flipbook"></div></div>
     <div class="flip-controls">
-      <button class="icon-btn" id="prevPage">‹</button>
+      <button class="icon-btn" id="prevPageBtn"><i class="fas fa-chevron-left"></i></button>
       <span class="page-indicator" id="pageIndicator">Page 1</span>
-      <button class="icon-btn" id="nextPage">›</button>
+      <button class="icon-btn" id="nextPageBtn"><i class="fas fa-chevron-right"></i></button>
     </div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   CATEGORY DATA — edit this array to match real catalogues.
-   pages: array of image URLs (export each PDF page as an image).
-   pdfUrl: link to the actual PDF file for the download button.
-         Set to "#" if no PDF is available yet.
-   ============================================================ */
 const CATEGORIES = [
   {
     code: "CAT-01",
@@ -402,7 +384,7 @@ const CATEGORIES = [
     desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.",
     color: "#2f6690",
     pdfUrl: "#",
-    pages: buildPages("Ski & Snow Wear", "#2f6690")
+    totalPages: 12
   },
   {
     code: "CAT-02",
@@ -410,7 +392,7 @@ const CATEGORIES = [
     desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",
     color: "#ff4b2b",
     pdfUrl: "#",
-    pages: buildPages("Streetwear", "#ff4b2b")
+    totalPages: 10
   },
   {
     code: "CAT-03",
@@ -418,7 +400,7 @@ const CATEGORIES = [
     desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",
     color: "#1f8a5b",
     pdfUrl: "#",
-    pages: buildPages("Sportswear", "#1f8a5b")
+    totalPages: 14
   },
   {
     code: "CAT-04",
@@ -426,7 +408,7 @@ const CATEGORIES = [
     desc: "Duffel bags, sports backpacks, fanny bags & tote bags.",
     color: "#8a5cf6",
     pdfUrl: "#",
-    pages: buildPages("Bags", "#8a5cf6")
+    totalPages: 8
   },
   {
     code: "CAT-05",
@@ -434,40 +416,74 @@ const CATEGORIES = [
     desc: "Caps, beanies, patches, sleeves, socks & custom trims.",
     color: "#d1a13d",
     pdfUrl: "#",
-    pages: buildPages("Headwear & Accessories", "#d1a13d")
+    totalPages: 8
   },
 ];
 
-/* Generates placeholder page HTML strings — swap these for real
-   <img src="..."> pages once you have exported catalogue images. */
-function buildPages(name, color){
-  const cover = `
-    <div class="cat-page cover" style="background:${color}">
-      <div class="page-tag" style="color:rgba(255,255,255,.7)">Core Sportswears · 2026</div>
-      <h4 style="font-size:26px;margin-top:40px;color:#fff;">${name}</h4>
-      <div style="font-size:12px;color:rgba(255,255,255,.75);margin-top:10px;">Wholesale &amp; Private Label Catalogue</div>
+function buildPageHTML(name, color, pageNum, totalPages) {
+  if (pageNum === 0) {
+    return `<div class="page-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px;">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:20px;">Core Sportswears &middot; 2026</div>
+      <h2 style="font-size:42px;margin-bottom:15px;">${name}</h2>
+      <p style="font-size:14px;max-width:400px;color:rgba(255,255,255,.7);">Wholesale &amp; Private Label Catalogue</p>
+      <div style="margin-top:40px;width:60px;height:3px;background:${color};border-radius:2px;"></div>
     </div>`;
-  const inner = (n)=>`
-    <div class="cat-page">
-      <div class="page-tag">${name} — Page ${n}</div>
-      <div class="grid">
-        <div class="swatch" style="height:110px"><small>Style</small><b>${name.split(' ')[0].toUpperCase()}-0${n}A</b></div>
-        <div class="swatch" style="height:110px"><small>Style</small><b>${name.split(' ')[0].toUpperCase()}-0${n}B</b></div>
-        <div class="swatch" style="height:70px"><small>Fabric</small><b>Replace with photo</b></div>
-        <div class="swatch" style="height:70px"><small>Fabric</small><b>Replace with photo</b></div>
-      </div>
-      <h4>Customization: Print · Embroidery · Labels</h4>
+  }
+  if (pageNum === totalPages - 1) {
+    return `<div class="page-content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px;">
+      <h2 style="font-size:28px;margin-bottom:15px;">Let's Build Your Collection</h2>
+      <p style="font-size:14px;max-width:400px;">WhatsApp +92 339 8624992</p>
+      <div style="margin-top:30px;width:40px;height:3px;background:${color};border-radius:2px;"></div>
     </div>`;
-  const back = `
-    <div class="cat-page cover" style="background:#14161a">
-      <div class="page-tag" style="color:#8a8f96">Thank You</div>
-      <h4 style="font-size:22px;margin-top:40px;color:#fff;">Let's Build Your Collection</h4>
-      <div style="font-size:12px;color:#9a9ea6;margin-top:10px;">WhatsApp +92 339 8624992</div>
-    </div>`;
-  return [cover, inner(1), inner(2), inner(3), back];
+  }
+  const items = [
+    `${name.split(' ')[0].toUpperCase()}-0${pageNum}A`,
+    `${name.split(' ')[0].toUpperCase()}-0${pageNum}B`,
+    `${name.split(' ')[0].toUpperCase()}-0${pageNum}C`,
+    `${name.split(' ')[0].toUpperCase()}-0${pageNum}D`,
+  ];
+  return `<div class="page-content" style="padding:24px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:15px;text-align:left;">Page ${pageNum + 1}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      ${items.map(item => `
+        <div style="background:#f8f8f8;border:1px solid #eee;border-radius:4px;padding:20px 14px;text-align:center;min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="width:40px;height:40px;border-radius:50%;background:${color}22;margin:0 auto 10px;"></div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#999;">Style</div>
+          <div style="font-size:14px;font-weight:600;color:#333;margin-top:4px;">${item}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="text-align:left;margin-top:15px;font-size:11px;color:#999;">Customization: Print &middot; Embroidery &middot; Labels</div>
+  </div>`;
 }
 
-/* ---------- render category cards ---------- */
+function getPages(cat) {
+  const pages = [];
+  for (let i = 0; i < cat.totalPages; i++) {
+    const isCover = i === 0;
+    const isBack = i === cat.totalPages - 1;
+    let bgColor = cat.color;
+    let textColor = '#fff';
+    if (isCover) {
+      bgColor = cat.color;
+    } else if (isBack) {
+      bgColor = '#222529';
+    } else {
+      bgColor = '#fff';
+      textColor = '#333';
+    }
+    pages.push({
+      html: buildPageHTML(cat.name, cat.color, i, cat.totalPages),
+      bg: bgColor,
+      color: textColor
+    });
+  }
+  return pages;
+}
+
+let currentCatIndex = 0;
+let isTurnInit = false;
+
 const grid = document.getElementById('catGrid');
 CATEGORIES.forEach((cat, i) => {
   const card = document.createElement('div');
@@ -492,7 +508,7 @@ CATEGORIES.forEach((cat, i) => {
     </div>
     <div class="cat-label" style="color:${cat.color}">
       ${cat.name}
-      <small>Catalogue — tap to view</small>
+      <small>Catalogue &mdash; tap to view</small>
     </div>`;
   card.tabIndex = 0;
   card.addEventListener('click', () => openCatalogue(i));
@@ -500,124 +516,122 @@ CATEGORIES.forEach((cat, i) => {
   grid.appendChild(card);
 });
 
-/* ---------- flipbook modal logic (self-contained, no external library) ---------- */
 const backdrop = document.getElementById('modalBackdrop');
 const flipEl = document.getElementById('flipbook');
 const modalTitle = document.getElementById('modalTitle');
-const downloadBtn = document.getElementById('downloadBtn');
 const pageIndicator = document.getElementById('pageIndicator');
+const prevBtn = document.getElementById('prevPageBtn');
+const nextBtn = document.getElementById('nextPageBtn');
+const closeBtn = document.getElementById('closeModalBtn');
+const downloadBtn = document.getElementById('downloadPdfBtn');
 
-let activePages = [];   // DOM elements for the currently open catalogue
-let currentIndex = 0;
-let isAnimating = false;
-let currentCatIndex = 0;
-
-function openCatalogue(i){
-  const cat = CATEGORIES[i];
+function openCatalogue(i) {
   currentCatIndex = i;
+  const cat = CATEGORIES[i];
   modalTitle.textContent = cat.name + ' — Catalogue';
 
+  if (isTurnInit) {
+    $(flipEl).turn('destroy');
+    isTurnInit = false;
+  }
   flipEl.innerHTML = '';
-  activePages = cat.pages.map((html, idx) => {
-    const page = document.createElement('div');
-    page.className = 'page' + (idx === 0 ? ' active' : '');
-    page.innerHTML = html;
-    flipEl.appendChild(page);
-    return page;
+  const pages = getPages(cat);
+
+  pages.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'page';
+    if (idx === 0) div.classList.add('cover-page');
+    div.style.background = p.bg;
+    div.style.color = p.color;
+    div.innerHTML = p.html;
+    flipEl.appendChild(div);
   });
-  currentIndex = 0;
-  pageIndicator.textContent = `Page 1 / ${activePages.length}`;
+
+  $(flipEl).turn({
+    width: 800,
+    height: 560,
+    autoCenter: true,
+    duration: 600,
+    pages: pages.length,
+    when: {
+      turned: function(e, page) {
+        updatePageIndicator(page, pages.length);
+      }
+    }
+  });
+  isTurnInit = true;
 
   backdrop.classList.add('open');
+  updatePageIndicator(1, pages.length);
 }
 
-async function downloadCatalogueAsPDF(){
+function updatePageIndicator(page, total) {
+  const display = Math.min(page, total);
+  pageIndicator.textContent = `Page ${display} / ${total}`;
+}
+
+prevBtn.addEventListener('click', () => {
+  if (isTurnInit) $(flipEl).turn('previous');
+});
+
+nextBtn.addEventListener('click', () => {
+  if (isTurnInit) $(flipEl).turn('next');
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!backdrop.classList.contains('open')) return;
+  if (e.key === 'ArrowRight') $(flipEl).turn('next');
+  if (e.key === 'ArrowLeft') $(flipEl).turn('previous');
+  if (e.key === 'Escape') closeFlipbook();
+});
+
+closeBtn.addEventListener('click', closeFlipbook);
+backdrop.addEventListener('click', (e) => {
+  if (e.target === backdrop) closeFlipbook();
+});
+
+function closeFlipbook() {
+  backdrop.classList.remove('open');
+  if (isTurnInit) $(flipEl).turn('destroy');
+  isTurnInit = false;
+}
+
+downloadBtn.addEventListener('click', async () => {
   const cat = CATEGORIES[currentCatIndex];
   const btn = downloadBtn;
-  const originalHtml = btn.innerHTML;
-  btn.innerHTML = '…';
+  const original = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
   btn.disabled = true;
 
   try {
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [420, 560] });
 
-    // Render each page off-screen, capture it, add to PDF
+    const pages = getPages(cat);
     const offscreen = document.createElement('div');
     offscreen.style.cssText = 'position:fixed;left:-9999px;top:0;width:420px;height:560px;overflow:hidden;z-index:-1;';
     document.body.appendChild(offscreen);
 
-    for (let idx = 0; idx < cat.pages.length; idx++) {
-      offscreen.innerHTML = cat.pages[idx];
-      // Small delay so fonts/layout settle
+    for (let idx = 0; idx < pages.length; idx++) {
+      offscreen.innerHTML = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${pages[idx].html}</div>`;
       await new Promise(r => setTimeout(r, 80));
-
       const canvas = await html2canvas(offscreen, {
-        width: 420, height: 560,
-        scale: 2,
-        useCORS: true,
-        backgroundColor: null
+        width: 420, height: 560, scale: 2, useCORS: true, backgroundColor: null
       });
-
       if (idx > 0) pdf.addPage([420, 560], 'portrait');
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 420, 560);
-
-      btn.innerHTML = `${idx + 1}/${cat.pages.length}`;
+      btn.innerHTML = `${idx + 1}/${pages.length}`;
     }
 
     document.body.removeChild(offscreen);
     pdf.save(`CoreSportswears-${cat.name.replace(/[^a-z0-9]/gi,'_')}-Catalogue.pdf`);
-  } catch(err) {
-    console.error('PDF generation failed:', err);
-    alert('Could not generate PDF. Please try again.');
+  } catch (err) {
+    console.error(err);
+    alert('Could not generate PDF.');
   }
 
-  btn.innerHTML = originalHtml;
+  btn.innerHTML = original;
   btn.disabled = false;
-}
-
-function goToPage(newIndex, direction){
-  if (isAnimating) return;
-  if (newIndex < 0 || newIndex >= activePages.length) return;
-  isAnimating = true;
-
-  const current = activePages[currentIndex];
-  const next = activePages[newIndex];
-
-  current.classList.remove('active');
-  current.classList.add(direction === 'next' ? 'exit-next' : 'exit-prev');
-
-  next.classList.add(direction === 'next' ? 'enter-from-next' : 'enter-from-prev');
-  void next.offsetWidth; // force reflow so the entering transform applies first
-
-  requestAnimationFrame(() => {
-    next.classList.remove('enter-from-next', 'enter-from-prev');
-    next.classList.add('active');
-  });
-
-  setTimeout(() => {
-    current.classList.remove('exit-next', 'exit-prev');
-    currentIndex = newIndex;
-    pageIndicator.textContent = `Page ${currentIndex + 1} / ${activePages.length}`;
-    isAnimating = false;
-  }, 460);
-}
-
-document.getElementById('nextPage').addEventListener('click', () => goToPage(currentIndex + 1, 'next'));
-document.getElementById('prevPage').addEventListener('click', () => goToPage(currentIndex - 1, 'prev'));
-document.getElementById('downloadBtn').addEventListener('click', downloadCatalogueAsPDF);
-
-document.getElementById('closeModal').addEventListener('click', () => {
-  backdrop.classList.remove('open');
-});
-backdrop.addEventListener('click', (e) => {
-  if (e.target === backdrop) backdrop.classList.remove('open');
-});
-document.addEventListener('keydown', (e) => {
-  if (!backdrop.classList.contains('open')) return;
-  if (e.key === 'ArrowRight') goToPage(currentIndex + 1, 'next');
-  if (e.key === 'ArrowLeft') goToPage(currentIndex - 1, 'prev');
-  if (e.key === 'Escape') backdrop.classList.remove('open');
 });
 </script>
 </body>
