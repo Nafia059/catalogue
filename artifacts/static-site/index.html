@@ -679,10 +679,14 @@ downloadBtn.addEventListener('click', async () => {
     document.body.appendChild(offscreen);
 
     for (let idx = 0; idx < pages.length; idx++) {
-      offscreen.innerHTML = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${pages[idx].html}</div>`;
-      await new Promise(r => setTimeout(r, 80));
+      let pageHtml = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${pages[idx].html}</div>`;
+      pageHtml = pageHtml.replace(/https:\/\/coresportswears\.com\/wp-content\/uploads\/[^"']+/g, function(m) { return '/api/img-proxy?url=' + encodeURIComponent(m); });
+      offscreen.innerHTML = pageHtml;
+      await new Promise(r => setTimeout(r, 200));
+      const imgs = offscreen.querySelectorAll('img');
+      if (imgs.length) await Promise.all(Array.from(imgs).map(img => new Promise(r => { if (img.complete) r(); else { img.onload = r; img.onerror = r; } })));
       const canvas = await html2canvas(offscreen, {
-        width: 420, height: 560, scale: 2, useCORS: true, backgroundColor: null
+        width: 420, height: 560, scale: 2, useCORS: true, backgroundColor: null, logging: false
       });
       if (idx > 0) pdf.addPage([420, 560], 'portrait');
       pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 420, 560);
