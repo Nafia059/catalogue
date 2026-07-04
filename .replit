@@ -7,7 +7,7 @@ router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
-args = ["pnpm", "install", "--frozen-lockfile"]
+args = ["sh", "-c", "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-server run build"]
 env = { "CI" = "true" }
 
 [nix]
