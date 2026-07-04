@@ -423,10 +423,11 @@ async function fetchAllProducts() {
   return grouped;
 }
 
+function ensureEven(n) { return n + (n % 2); }
 function updateTotalPages() {
   CATEGORIES.forEach(cat => {
     const count = (PRODUCTS[cat.code] || []).length;
-    cat.totalPages = Math.max(3, Math.ceil(count / 4) + 2);
+    cat.totalPages = ensureEven(Math.max(4, Math.ceil(count / 4) + 2));
   });
 }
 
