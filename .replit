@@ -1,12 +1,17 @@
 modules = ["nodejs-24"]
+run = "pnpm --filter @workspace/api-server run dev"
 
 [deployment]
+run = "pnpm --filter @workspace/api-server run dev"
 router = "application"
 deploymentTarget = "autoscale"
 
 [deployment.postBuild]
-args = ["pnpm", "store", "prune"]
+args = ["pnpm", "install", "--frozen-lockfile"]
 env = { "CI" = "true" }
+
+[nix]
+channel = "stable-24_11"
 
 [workflows]
 runButton = "Project"
