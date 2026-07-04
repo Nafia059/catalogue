@@ -245,21 +245,27 @@ body::before{
   transition:transform 0.2s;
 }
 
-/* Responsive */
-@media (max-width:900px){
-  #flipbook{width:100%;height:auto;aspect-ratio:3/2;max-width:640px;}
+/* Responsive wrapper */
+.book-responsive{display:flex;align-items:center;justify-content:center;}
+@media (max-width:1050px){
+  .book-responsive{transform:scale(0.8);transform-origin:center center;}
   .toolbar-brand{font-size:13px;}
   .tb-btn{width:30px;height:30px;font-size:13px;}
   .flipbook-toolbar{padding:0 10px;}
 }
-@media (max-width:600px){
+@media (max-width:720px){
+  .book-responsive{transform:scale(0.55);transform-origin:center center;}
   .flipbook-toolbar{height:44px;padding:0 6px;}
-  .tb-btn{width:26px;height:26px;font-size:11px;}
+  .tb-btn{width:28px;height:28px;font-size:12px;}
   .toolbar-brand{font-size:11px;}
-  .book-container{padding:56px 8px 20px;}
+  .book-container{padding:56px 4px 20px;}
 }
 @media (max-width:480px){
+  .book-responsive{transform:scale(0.4);transform-origin:center center;}
   .toolbar-brand{display:none;}
+  .tb-btn{width:24px;height:24px;font-size:10px;}
+  .flipbook-toolbar{height:40px;padding:0 4px;}
+  .book-container{padding:48px 2px 16px;}
 }
 </style>
 </head>
@@ -280,10 +286,12 @@ body::before{
 </header>
 
 <main class="book-container" id="bookContainer">
-  <div class="book-wrapper" id="bookWrapper">
-    <div class="book-shadow"></div>
-    <div class="book-spine"></div>
-    <div id="flipbook"></div>
+  <div class="book-responsive" id="bookResponsive">
+    <div class="book-wrapper" id="bookWrapper">
+      <div class="book-shadow"></div>
+      <div class="book-spine"></div>
+      <div id="flipbook"></div>
+    </div>
   </div>
 </main>
 
@@ -424,7 +432,6 @@ function buildPageHTML(name, color, pageNum, totalPages, products){
   const startIdx = (pageNum - 1) * itemsPerPage;
   const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
   return `<div class="page-inner" style="padding:16px;position:relative;">
-    <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;">Page ${pageNum + 1}</div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       ${items.length ? items.map(item => `
         <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;">
