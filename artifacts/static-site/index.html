@@ -481,8 +481,23 @@ async function fetchFromWC(endpoint, params = {}) {
 }
 
 async function fetchAllProducts() {
-  const slugToCode = {};
-  CATEGORIES.forEach(c => { if (c.slug) slugToCode[c.slug] = c.code; });
+  const slugToCode = {
+    "ski-snow-wear": "CAT-01",
+    "outerwear": "CAT-01",
+    "ski-snowboarding-pants": "CAT-01",
+    "custom-ski-suits": "CAT-01",
+    "hoodies": "CAT-01",
+    "ski-snowboard-accessories": "CAT-01",
+    "ski-balaclava-neck-warmers": "CAT-01",
+    "custom-streetwear": "CAT-02",
+    "custom-t-shirts": "CAT-02",
+    "basic-t-shirts": "CAT-02",
+    "oversized-streetwear-t-shirts": "CAT-02",
+    "washed-dyed-t-shirts": "CAT-02",
+    "graphic-printed-t-shirts": "CAT-02",
+    "custom-sportswear": "CAT-03",
+    "custom-bags": "CAT-04",
+  };
 
   const all = [];
   let page = 1;
@@ -497,17 +512,20 @@ async function fetchAllProducts() {
   CATEGORIES.forEach(c => { grouped[c.code] = []; });
 
   all.forEach(p => {
+    const matched = new Set();
     (p.categories || []).forEach(cat => {
       const code = slugToCode[cat.slug];
-      if (code) {
-        const name = p.name || '';
-        const desc = p.short_description ? p.short_description.replace(/<[^>]*>/g, '').trim() : '';
-        const img = (p.images && p.images[0]) ? p.images[0].src : '';
-        if (img && !grouped[code].some(ex => ex.img === img)) {
-          grouped[code].push({ img, name, desc });
-        }
-      }
+      if (code) matched.add(code);
     });
+    if (matched.size) {
+      const code = [...matched][0];
+      const name = p.name || '';
+      const desc = p.short_description ? p.short_description.replace(/<[^>]*>/g, '').trim() : '';
+      const img = (p.images && p.images[0]) ? p.images[0].src : '';
+      if (img && !grouped[code].some(ex => ex.img === img)) {
+        grouped[code].push({ img, name, desc });
+      }
+    }
   });
 
   return grouped;
