@@ -20,6 +20,14 @@ body{
   display:flex;flex-direction:column;
   -webkit-font-smoothing:antialiased;
 }
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:256px 256px;
+  pointer-events:none;
+}
 :root{
   --accent:#00991a;
   --accent-hover:#00b31f;
@@ -266,9 +274,8 @@ body{
     <button class="tb-btn" id="nextBtn" title="Next Page"><i class="fas fa-chevron-right"></i></button>
     <button class="tb-btn" id="zoomInBtn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
     <button class="tb-btn" id="zoomOutBtn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
-    <button class="tb-btn" id="searchBtn" title="Search"><i class="fas fa-search"></i></button>
-    <button class="tb-btn" id="thumbBtn" title="Thumbnail View"><i class="fas fa-th"></i></button>
-    <button class="tb-btn" id="fullscreenBtn" title="Fullscreen"><i class="fas fa-expand"></i></button>
+    <button class="tb-btn" id="thumbBtn" title="Show All Pages"><i class="fas fa-th"></i></button>
+    <button class="tb-btn" id="fullscreenBtn" title="Full Screen"><i class="fas fa-expand"></i></button>
   </div>
 </header>
 
@@ -280,13 +287,6 @@ body{
   </div>
 </main>
 
-<div class="search-overlay" id="searchOverlay">
-  <div class="search-box">
-    <input type="number" id="searchInput" placeholder="Page number..." min="1" autofocus>
-    <button id="searchGoBtn" title="Go"><i class="fas fa-arrow-right"></i></button>
-    <button id="searchCloseBtn" title="Close"><i class="fas fa-times"></i></button>
-  </div>
-</div>
 
 <div class="thumb-overlay" id="thumbOverlay">
   <div class="thumb-header">
@@ -402,25 +402,28 @@ const catIndex = parseInt(params.get('cat')) || 0;
 const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
 function buildPageHTML(name, color, pageNum, totalPages, products){
+  const pageNumStr = `${pageNum + 1} / ${totalPages}`;
   if(pageNum === 0){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;">
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;position:relative;">
       <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:16px;">Core Sportswears · 2026</div>
       <h2 style="font-size:32px;margin-bottom:12px;">${name}</h2>
       <p style="font-size:13px;max-width:320px;color:rgba(255,255,255,.7);text-align:center;">Wholesale & Private Label Catalogue</p>
       <div style="margin-top:30px;width:50px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
     </div>`;
   }
   if(pageNum === totalPages - 1){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;">
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;position:relative;">
       <h2 style="font-size:24px;margin-bottom:12px;">Let's Build Your Collection</h2>
       <p style="font-size:13px;max-width:320px;text-align:center;">WhatsApp +92 339 8624992</p>
       <div style="margin-top:20px;width:40px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
     </div>`;
   }
   const itemsPerPage = 2;
   const startIdx = (pageNum - 1) * itemsPerPage;
   const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
-  return `<div class="page-inner" style="padding:16px;">
+  return `<div class="page-inner" style="padding:16px;position:relative;">
     <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#999;margin-bottom:10px;">Page ${pageNum + 1}</div>
     <div style="display:flex;flex-direction:column;gap:10px;">
       ${items.length ? items.map(item => `
@@ -430,6 +433,7 @@ function buildPageHTML(name, color, pageNum, totalPages, products){
         </div>
       `).join('') : '<div style="color:#ccc;font-size:12px;padding:30px 0;text-align:center;">Products coming soon</div>'}
     </div>
+    <div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:#999;">${pageNumStr}</div>
   </div>`;
 }
 
@@ -540,24 +544,6 @@ function applyZoom(){
   document.getElementById('bookContainer').classList.toggle('zoomed-in',currentZoom>1);
 }
 
-const searchOverlay = document.getElementById('searchOverlay');
-const searchInput = document.getElementById('searchInput');
-document.getElementById('searchBtn').addEventListener('click',()=>{
-  searchOverlay.classList.toggle('open');
-  if(searchOverlay.classList.contains('open')) searchInput.focus();
-});
-document.getElementById('searchGoBtn').addEventListener('click',goToPage);
-searchInput.addEventListener('keydown',e=>{if(e.key==='Enter')goToPage();});
-document.getElementById('searchCloseBtn').addEventListener('click',()=>searchOverlay.classList.remove('open'));
-searchOverlay.addEventListener('click',e=>{if(e.target===searchOverlay)searchOverlay.classList.remove('open');});
-function goToPage(){
-  const val = parseInt(searchInput.value);
-  if(!isNaN(val)&&val>=1&&val<=totalPages){
-    const f=getFlip();
-    if(f){f.turn('page',val);searchOverlay.classList.remove('open');searchInput.value='';}
-  }
-}
-
 // Thumbnails
 const thumbOverlay = document.getElementById('thumbOverlay');
 const thumbGrid = document.getElementById('thumbGrid');
@@ -619,12 +605,10 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'){e.preventDefault();f.turn('next');}
   if(e.key==='ArrowLeft'){e.preventDefault();f.turn('previous');}
   if(e.key==='Escape'){
-    if(searchOverlay.classList.contains('open'))searchOverlay.classList.remove('open');
     if(thumbOverlay.classList.contains('open'))thumbOverlay.classList.remove('open');
   }
   if(e.ctrlKey&&e.key==='+'){e.preventDefault();document.getElementById('zoomInBtn').click();}
   if(e.ctrlKey&&e.key==='-'){e.preventDefault();document.getElementById('zoomOutBtn').click();}
-  if(e.ctrlKey&&e.key==='f'){e.preventDefault();document.getElementById('searchBtn').click();}
 });
 
 // Click on page to navigate
