@@ -245,24 +245,27 @@ body::before{
   transition:transform 0.2s;
 }
 
-/* Responsive */
-@media (max-width:900px){
-  .book-container{padding:68px 10px 40px;}
+/* Responsive wrapper */
+.book-responsive{display:flex;align-items:center;justify-content:center;}
+@media (max-width:1050px){
+  .book-responsive{transform:scale(0.8);transform-origin:center center;}
   .toolbar-brand{font-size:13px;}
   .tb-btn{width:30px;height:30px;font-size:13px;}
   .flipbook-toolbar{padding:0 10px;}
 }
-@media (max-width:600px){
+@media (max-width:720px){
+  .book-responsive{transform:scale(0.55);transform-origin:center center;}
   .flipbook-toolbar{height:44px;padding:0 6px;}
   .tb-btn{width:28px;height:28px;font-size:12px;}
   .toolbar-brand{font-size:11px;}
-  .book-container{padding:56px 6px 36px;}
+  .book-container{padding:56px 4px 20px;}
 }
 @media (max-width:480px){
+  .book-responsive{transform:scale(0.4);transform-origin:center center;}
   .toolbar-brand{display:none;}
   .tb-btn{width:24px;height:24px;font-size:10px;}
   .flipbook-toolbar{height:40px;padding:0 4px;}
-  .book-container{padding:48px 4px 32px;}
+  .book-container{padding:48px 2px 16px;}
 }
 </style>
 </head>
@@ -283,10 +286,12 @@ body::before{
 </header>
 
 <main class="book-container" id="bookContainer">
-  <div class="book-wrapper" id="bookWrapper">
-    <div class="book-shadow"></div>
-    <div class="book-spine"></div>
-    <div id="flipbook"></div>
+  <div class="book-responsive" id="bookResponsive">
+    <div class="book-wrapper" id="bookWrapper">
+      <div class="book-shadow"></div>
+      <div class="book-spine"></div>
+      <div id="flipbook"></div>
+    </div>
   </div>
 </main>
 
@@ -613,11 +618,8 @@ document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='-'){e.preventDefault();document.getElementById('zoomOutBtn').click();}
 });
 
-// Click on page to navigate (skip if from touch — turn.js handles it)
-let touchFired = false;
-document.addEventListener('touchstart',()=>{touchFired=true;},{passive:true});
+// Click on page to navigate
 document.addEventListener('click',e=>{
-  if(touchFired){touchFired=false;return;}
   const flipEl = document.getElementById('flipbook');
   if(!flipEl||!flipEl.contains(e.target))return;
   if(e.target.closest('.tb-btn')||e.target.closest('.icon-btn'))return;
