@@ -23,6 +23,10 @@ publicDir = "artifacts/static-site/dist/public"
 serve = "static"
 
 [[services.production.rewrites]]
+from = "/flipbook-viewer.html"
+to = "/flipbook-viewer.html"
+
+[[services.production.rewrites]]
 from = "/*"
 to = "/index.html"
 
