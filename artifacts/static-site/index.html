@@ -120,6 +120,7 @@
     margin-bottom:16px;
     transition:transform .35s ease;
     transform-style:preserve-3d;
+    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
   }
   .cat-card:hover .book-scene{ transform:translateY(-10px) scale(1.03); }
 
@@ -128,7 +129,7 @@
     width:150px; height:158px;
     display:flex;
     transform:perspective(900px) rotateX(8deg) rotate(-3deg);
-    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
+    will-change:transform;
   }
   .book-open .leaf{
     position:relative; width:50%; height:100%;
@@ -160,6 +161,7 @@
     box-shadow:12px 18px 26px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.06);
     display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
     background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
+    will-change:transform;
   }
   .book-cover .code{
     writing-mode:vertical-rl;
