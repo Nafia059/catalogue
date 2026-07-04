@@ -5,6 +5,10 @@ import wcRouter from "./wc";
 
 const router: IRouter = Router();
 
+router.get("/", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 router.use(healthRouter);
 router.use(proxyRouter);
 router.use(wcRouter);
