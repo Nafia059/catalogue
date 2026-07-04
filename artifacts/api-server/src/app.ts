@@ -2,9 +2,13 @@ import express, { type Express } from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app: Express = express();
 
@@ -33,8 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the static-site
 const staticPaths = [
-  path.resolve(import.meta.dirname, "..", "..", "static-site", "public"),
-  path.resolve(import.meta.dirname, "..", "..", "static-site", "dist", "public"),
+  path.resolve(__dirname, "..", "..", "static-site", "public"),
+  path.resolve(__dirname, "..", "..", "static-site", "dist", "public"),
 ];
 let staticDir = "";
 for (const p of staticPaths) {
