@@ -631,20 +631,12 @@ document.title = `${cat.name} — Flipbook Viewer | Core Sportswears`;
 (async function loadCatalog() {
   try {
     const fetched = await fetchAllProducts();
-    let updated = false;
     CATEGORIES.forEach(c => {
       if (fetched[c.code] && fetched[c.code].length > 0) {
         PRODUCTS[c.code] = fetched[c.code];
-        updated = true;
       }
     });
-    if (updated) {
-      // Reinitialize flipbook with updated products
-      const f = getFlip();
-      if (f) { try { f.turn('destroy'); } catch(e) {} }
-      const pagesData = initFlipbook();
-      console.log('Viewer updated from WooCommerce API');
-    }
+    console.log('Products loaded from WooCommerce API');
   } catch (e) {
     console.warn('Could not fetch from WooCommerce API, using fallback data.', e);
   }
