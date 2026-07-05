@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Flipbook Viewer — Core Sportswears</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/3/turn.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  background:#131416;
+  color:#fff;
+  font-family:'Open Sans',sans-serif;
+  display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:256px 256px;
+  pointer-events:none;
+}
+:root{
+  --accent:#00991a;
+  --accent-hover:#00b31f;
+  --accent-dark:#008016;
+  --toolbar-bg:#1a1c1e;
+  --toolbar-border:#2a2c2e;
+  --bg-dark:#131416;
+  --page-bg:#f7f5ef;
+}
+
+/* Toolbar */
+.flipbook-toolbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  height:52px;padding:0 16px;
+  background:var(--toolbar-bg);
+  border-bottom:1px solid var(--toolbar-border);
+  flex-shrink:0;
+}
+.toolbar-brand{
+  font-family:'Poppins',sans-serif;
+  font-size:16px;font-weight:700;
+  color:#fff;letter-spacing:0.5px;
+  white-space:nowrap;
+}
+.toolbar-brand span{color:var(--accent);}
+.toolbar-right{display:flex;align-items:center;gap:2px;}
+.tb-btn{
+  background:transparent;border:none;color:rgba(255,255,255,0.7);
+  width:36px;height:36px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;cursor:pointer;
+  transition:all 0.2s;
+}
+.tb-btn:hover{color:#fff;background:rgba(255,255,255,0.1);}
+.tb-btn.active,.tb-btn:active{color:var(--accent);}
+.tb-btn:disabled{opacity:0.3;cursor:default;}
+
+/* Book container */
+.book-container{
+  flex:1;
+  display:flex;align-items:center;justify-content:center;
+  padding:72px 20px 44px;
+  background:radial-gradient(ellipse at center, #1e2024 0%, #0d0f10 100%);
+  overflow:hidden;
+}
+.book-wrapper{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.3s ease;
+}
+/* Realistic drop shadow under the book */
+.book-shadow{
+  position:absolute;
+  left:20px;right:20px;bottom:-24px;height:70px;
+  background:radial-gradient(ellipse at 50% 80%, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 40%, transparent 70%);
+  filter:blur(4px);
+  pointer-events:none;z-index:0;
+}
+/* Center spine shadow/gradient */
+.book-spine{
+  position:absolute;
+  top:-4px;bottom:-4px;left:50%;width:28px;
+  transform:translateX(-50%);
+  background:linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0.06) 20%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.06) 80%, rgba(0,0,0,0) 100%);
+  pointer-events:none;z-index:10;
+}
+#flipbook{
+  position:relative;z-index:1;
+  border-radius:2px;
+  box-shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+#flipbook .page{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Open Sans',sans-serif;
+  overflow:hidden;
+  backface-visibility:visible;
+  -webkit-backface-visibility:visible;
+}
+#flipbook .page .page-inner{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  position:relative;
+}
+/* Page curl edge shadows */
+#flipbook .turn-page-wrapper{
+  position:relative;
+  background:transparent !important;
+}
+#flipbook .turn-page-wrapper::before{
+  content:'';position:absolute;inset:0;
+  pointer-events:none;z-index:5;
+}
+#flipbook .even .page::after{
+  content:'';position:absolute;top:4px;right:0;bottom:4px;width:8px;
+  background:linear-gradient(to left, rgba(0,0,0,0.06), transparent);
+  pointer-events:none;z-index:5;
+}
+#flipbook .odd .page::after{
+  content:'';position:absolute;top:4px;left:0;bottom:4px;width:8px;
+  background:linear-gradient(to right, rgba(0,0,0,0.06), transparent);
+  pointer-events:none;z-index:5;
+}
+#flipbook .page::before{
+  content:'';position:absolute;
+  top:0;height:36px;width:44px;
+  pointer-events:none;z-index:6;
+}
+#flipbook .even .page::before{
+  right:0;
+  background:linear-gradient(225deg, rgba(0,0,0,0.07) 0%, rgba(0,0,0,0.02) 40%, transparent 80%);
+}
+#flipbook .odd .page::before{
+  left:0;
+  background:linear-gradient(-225deg, rgba(0,0,0,0.07) 0%, rgba(0,0,0,0.02) 40%, transparent 80%);
+}
+/* Bottom corner page-curl shadows */
+#flipbook .page::after{
+  content:'';position:absolute;
+  bottom:0;height:36px;width:44px;
+  pointer-events:none;z-index:6;
+}
+#flipbook .even .page::after{
+  right:0;
+  background:linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.07) 100%);
+}
+#flipbook .odd .page::after{
+  left:0;
+  background:linear-gradient(-135deg, transparent 0%, rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.07) 100%);
+}
+
+/* Page content */
+.page-content{padding:20px;width:100%;height:100%;}
+.page-content h2{
+  font-family:'Poppins',sans-serif;
+  font-size:22px;font-weight:700;color:#222529;
+  margin-bottom:10px;
+}
+.page-content p{color:#666;font-size:12px;line-height:1.6;}
+
+/* Search overlay */
+.search-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,0.7);
+  display:none;align-items:center;justify-content:center;
+}
+.search-overlay.open{display:flex;}
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--toolbar-bg);border:1px solid var(--toolbar-border);
+  padding:8px 12px;border-radius:6px;
+}
+.search-box input{
+  background:transparent;border:none;color:#fff;
+  font-size:15px;width:220px;outline:none;
+  font-family:'Open Sans',sans-serif;
+}
+.search-box input::placeholder{color:rgba(255,255,255,0.4);}
+.search-box button{
+  background:transparent;border:none;color:rgba(255,255,255,0.6);
+  width:32px;height:32px;border-radius:4px;
+  cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.search-box button:hover{color:var(--accent);background:rgba(255,255,255,0.08);}
+
+/* Thumbnail grid */
+.thumb-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,0.85);
+  display:none;flex-direction:column;
+  padding:72px 20px 44px;
+}
+.thumb-overlay.open{display:flex;}
+.thumb-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 16px;flex-shrink:0;
+}
+.thumb-header h3{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;}
+.thumb-close{
+  background:transparent;border:none;color:rgba(255,255,255,0.7);
+  width:36px;height:36px;border-radius:4px;cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.thumb-close:hover{color:#fff;background:rgba(255,255,255,0.1);}
+.thumb-grid{
+  flex:1;overflow-y:auto;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:12px;padding:0 20px 20px;
+  align-content:start;
+}
+.thumb-item{
+  background:#fff;border-radius:4px;overflow:hidden;
+  cursor:pointer;position:relative;
+  aspect-ratio:3/4;box-shadow:0 2px 8px rgba(0,0,0,0.3);
+  transition:transform 0.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.thumb-item:hover{transform:scale(1.05);outline:2px solid var(--accent);}
+.thumb-item img{width:100%;height:100%;object-fit:contain;padding:4px;}
+.thumb-item .thumb-num{
+  position:absolute;bottom:4px;right:4px;
+  background:rgba(0,0,0,0.7);color:#fff;
+  font-size:10px;padding:2px 6px;border-radius:3px;
+}
+
+/* Zoom */
+.book-container.zoomed-in .book-wrapper{
+  transform:scale(1.4);
+  transform-origin:center center;
+  transition:transform 0.2s;
+}
+
+/* Responsive wrapper */
+.book-responsive{display:flex;align-items:center;justify-content:center;}
+@media (max-width:1050px){
+  .toolbar-brand{font-size:13px;}
+  .tb-btn{width:30px;height:30px;font-size:13px;}
+  .flipbook-toolbar{padding:0 10px;}
+}
+@media (max-width:720px){
+  .flipbook-toolbar{height:44px;padding:0 6px;}
+  .tb-btn{width:28px;height:28px;font-size:12px;}
+  .toolbar-brand{font-size:11px;}
+  .book-container{padding:56px 4px 20px;}
+}
+@media (max-width:480px){
+  .toolbar-brand{display:none;}
+  .tb-btn{width:24px;height:24px;font-size:10px;}
+  .flipbook-toolbar{height:40px;padding:0 4px;}
+  .book-container{padding:48px 2px 16px;}
+}
+</style>
+</head>
+<body>
+
+<header class="flipbook-toolbar">
+  <span class="toolbar-brand">CORE <span>SPORTS</span>WEARS</span>
+  <div class="toolbar-right">
+    <button class="tb-btn" id="homeBtn" title="Home"><i class="fas fa-home"></i></button>
+    <button class="tb-btn" id="downloadBtn" title="Download PDF"><i class="fas fa-download"></i></button>
+    <button class="tb-btn" id="prevBtn" title="Previous Page"><i class="fas fa-chevron-left"></i></button>
+    <button class="tb-btn" id="nextBtn" title="Next Page"><i class="fas fa-chevron-right"></i></button>
+    <button class="tb-btn" id="zoomInBtn" title="Zoom In"><i class="fas fa-search-plus"></i></button>
+    <button class="tb-btn" id="zoomOutBtn" title="Zoom Out"><i class="fas fa-search-minus"></i></button>
+    <button class="tb-btn" id="thumbBtn" title="Show All Pages"><i class="fas fa-th"></i></button>
+    <button class="tb-btn" id="fullscreenBtn" title="Full Screen"><i class="fas fa-expand"></i></button>
+  </div>
+</header>
+
+<main class="book-container" id="bookContainer">
+  <div class="book-responsive" id="bookResponsive">
+    <div class="book-wrapper" id="bookWrapper">
+      <div class="book-shadow"></div>
+      <div class="book-spine"></div>
+      <div id="flipbook"></div>
+    </div>
+  </div>
+</main>
+
+
+<div class="thumb-overlay" id="thumbOverlay">
+  <div class="thumb-header">
+    <h3>All Pages</h3>
+    <button class="thumb-close" id="thumbCloseBtn"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="thumb-grid" id="thumbGrid"></div>
+</div>
+
+<script>
+const CATEGORIES = [
+  {code:"CAT-01",name:"Ski & Snow Wear",desc:"Jackets, pants, base layers, insulated outerwear & winter accessories.",slug:"ski-snow-wear",color:"#2f6690",totalPages:6},
+  {code:"CAT-02",name:"Streetwear",desc:"Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",slug:"custom-streetwear",color:"#ff4b2b",totalPages:6},
+  {code:"CAT-03",name:"Sportswear",desc:"Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",slug:"custom-sportswear",color:"#1f8a5b",totalPages:4},
+  {code:"CAT-04",name:"Bags",desc:"Duffel bags, sports backpacks, fanny bags & tote bags.",slug:"custom-bags",color:"#8a5cf6",totalPages:4},
+  {code:"CAT-05",name:"Headwear & Accessories",desc:"Caps, beanies, patches, sleeves, socks & custom trims.",slug:"",color:"#d1a13d",totalPages:4},
+];
+
+const FALLBACK_PRODUCTS = {
+  "CAT-01":[
+    {img:'https://coresportswears.com/wp-content/uploads/2025/11/front-view-snow-pant.png',name:'15K Snowwear Pant',desc:'Waterproof snow pants with 15K rating.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/02/cordura-snowboarding-pant-3.webp',name:'20K Snowboarding Pants',desc:'Premium 20K waterproof, taped seams, Cordura.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2025/12/ski-pant-front.jpg',name:'Softshell Snowboard Pants',desc:'Stretch comfort with DWR weather resistance.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/02/hALF-HALF-PANT-5.webp',name:'Half-Half Baggy Snow Pant',desc:'Two-tone baggy silhouette with boot gaiter.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/02/sherpa-fleece-pant_05_1000x1000.webp',name:'Sherpa Fleece Snow Pants',desc:'Serious warmth with sherpa fleece lining.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/core_sportswears_pants_side.webp',name:'Fleece Lined Softshell Pant',desc:'Fleece-lined softshell with weather-resistant face.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/ski_bib_1000x1000.webp',name:'Snowboarding & Ski Bib',desc:'10K waterproof bib, adjustable suspenders.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/CORE_Camo_Hoodie_Tall_1000x1000.webp',name:'Camouflage Tall Hoodie',desc:'Heavyweight cotton camo hoodie in tall sizes.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/ski-balaclava.webp',name:'Fleece Ski Balaclava',desc:'Custom fleece balaclava with embroidery options.'}
+  ],
+  "CAT-02":[
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/blue_longsleeve_1000x1000.webp',name:'Basic Long Sleeve T-Shirt',desc:'Combed cotton long sleeve tee.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/plum_vneck_front_back_straight_hem.webp',name:'Basic V-Neck T-Shirt',desc:'Classic V-neck in premium single jersey cotton.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/charcoal_pocket_tshirt_front_1000x1000.webp',name:'Pocket T-Shirt',desc:'Relaxed fit with chest pocket.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/heather_grey_tshirt.webp',name:'Curved Hem Basic T-Shirt',desc:'Modern curved hem with side splits.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/dark_grey_tshirt_1000x1000.webp',name:'Dark Grey Single Jersey T-Shirt',desc:'Premium dark grey tee, pre-shrunk fabric.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/cotton-stripe-stitching-front.webp',name:'Stripe Stitched Cotton T-Shirt',desc:'Color stripe stitching detail on front.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/03/regular-fit-asid-washed-cotton-shirt-front.webp',name:'Acid Washed Regular Fit Tee',desc:'Acid washed finish for a vintage look.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/02/bricks-shirt-front-1.webp',name:'Graphic Printed T-Shirt',desc:'Custom graphic print on premium tee.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/Rhine-stone-drop-shoulder-tshirt-1.webp',name:'Drop Shoulder Rhinestone T-Shirt',desc:'Drop shoulder cut with rhinestone detailing.'}
+  ],
+  "CAT-03":[
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/core_jacket_converted.webp',name:'Basketball Uniforms',desc:'Custom reversible jerseys, shorts, compression.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/sublimation-printing.webp',name:'Soccer Uniforms',desc:'Custom sublimation jerseys, shorts, socks.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/screen_printing_collage.webp',name:'Rugby & Football',desc:'Durable jerseys, pants, and training gear.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/core_reflective_1000x1000.webp',name:'Baseball & Cricket',desc:'Custom jerseys, sublimation, embroidered logos.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/core_logo.webp',name:'Cycling & Fitness',desc:'Compression tops, jerseys, gym shorts, leggings.'}
+  ],
+  "CAT-04":[
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing.webp',name:'Duffel Bags',desc:'Large-capacity duffels for gym and travel.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing-1.webp',name:'Sports Backpacks',desc:'Durable backpacks, multiple compartments.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp',name:'Fanny Packs & Belt Bags',desc:'Trendy waist packs, custom prints.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp',name:'Tote & Shopping Bags',desc:'Canvas, cotton, polyester totes.'}
+  ],
+  "CAT-05":[
+    {img:'https://coresportswears.com/wp-content/uploads/2025/11/Flat-Embroidery.jpg',name:'Custom Caps & Hats',desc:'Snapback, dad hats, trucker caps.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2025/11/3D-Embroidery.jpg',name:'Beanies & Winter Hats',desc:'Knitted, cuffed, slouchy, fleece beanies.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2025/11/Chenille-Embroidery.jpg',name:'Gloves, Scarves & Wraps',desc:'Touchscreen gloves, neck gaiters, headbands.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg',name:'Patches & Badges',desc:'PVC, rubber, embroidered, leather patches.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/custom_rubber_patch.webp',name:'Custom Rubber Patches',desc:'3D rubber logos, PVC patches.'},
+    {img:'https://coresportswears.com/wp-content/uploads/2026/05/CORE_woven_label.webp',name:'Woven Labels & Tags',desc:'Custom woven labels, satin tags, neck tape.'}
+  ]
+};
+
+let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
+let currentZoom = 1;
+
+function getFlipDimensions() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const availW = vw - 40;
+  const availH = vh - 120;
+  if (availW <= 480) {
+    const w = Math.min(availW, 400);
+    const h = Math.round(w * 0.667);
+    return { width: w, height: h, duration: 300 };
+  } else if (availW <= 720) {
+    const w = Math.min(availW, 560);
+    const h = Math.round(w * 0.667);
+    return { width: w, height: h, duration: 400 };
+  } else if (availW <= 1050) {
+    return { width: 680, height: 450, duration: 500 };
+  }
+  return { width: 840, height: 560, duration: 600 };
+}
+
+async function fetchFromWC(endpoint, params = {}) {
+  const q = new URLSearchParams({ endpoint, ...params }).toString();
+  const res = await fetch(`/api/wc?${q}`);
+  if (!res.ok) throw new Error(`WC API error: ${res.status}`);
+  return res.json();
+}
+
+async function fetchAllProducts() {
+  const slugToCode = {
+    "ski-snow-wear":"CAT-01","outerwear":"CAT-01","ski-snowboarding-pants":"CAT-01",
+    "custom-ski-suits":"CAT-01","hoodies":"CAT-01","ski-snowboard-accessories":"CAT-01",
+    "ski-balaclava-neck-warmers":"CAT-01","custom-streetwear":"CAT-02","custom-t-shirts":"CAT-02",
+    "basic-t-shirts":"CAT-02","oversized-streetwear-t-shirts":"CAT-02","washed-dyed-t-shirts":"CAT-02",
+    "graphic-printed-t-shirts":"CAT-02","custom-sportswear":"CAT-03","custom-bags":"CAT-04",
+  };
+  const all = [];
+  let page = 1;
+  while (true) {
+    const data = await fetchFromWC('products', { per_page: '100', page: String(page) });
+    if (!data || !data.length) break;
+    all.push(...data); page++;
+  }
+  const grouped = {};
+  CATEGORIES.forEach(c => { grouped[c.code] = []; });
+  all.forEach(p => {
+    const matched = new Set();
+    (p.categories || []).forEach(cat => {
+      const code = slugToCode[cat.slug];
+      if (code) matched.add(code);
+    });
+    if (matched.size) {
+      const code = [...matched][0];
+      const name = p.name || '';
+      const desc = p.short_description ? p.short_description.replace(/<[^>]*>/g, '').trim() : '';
+      const img = (p.images && p.images[0]) ? p.images[0].src : '';
+      if (img && !grouped[code].some(ex => ex.img === img)) {
+        grouped[code].push({ img, name, desc });
+      }
+    }
+  });
+  return grouped;
+}
+
+const params = new URLSearchParams(window.location.search);
+const catIndex = parseInt(params.get('cat')) || 0;
+const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
+
+function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH){
+  const isSmall = pageW < 500;
+  const pad = isSmall ? 8 : 16;
+  const imgH = isSmall ? Math.round(pageH * 0.18) : 100;
+  const fontSize = isSmall ? 9 : 11;
+  const titleSize = isSmall ? 14 : 22;
+  const pageNumStr = `${pageNum + 1} / ${totalPages}`;
+  if(pageNum === 0){
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
+      <div style="font-size:${isSmall?7:10}px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:${isSmall?8:16}px;">Core Sportswears · 2026</div>
+      <h2 style="font-size:${isSmall?18:titleSize}px;margin-bottom:${isSmall?6:12}px;">${name}</h2>
+      <p style="font-size:${isSmall?10:13}px;max-width:320px;color:rgba(255,255,255,.7);text-align:center;">Wholesale & Private Label Catalogue</p>
+      <div style="margin-top:${isSmall?16:30}px;width:${isSmall?30:50}px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    </div>`;
+  }
+  if(pageNum === totalPages - 1){
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
+      <h2 style="font-size:${isSmall?16:24}px;margin-bottom:${isSmall?6:12}px;">Let's Build Your Collection</h2>
+      <p style="font-size:${isSmall?10:13}px;max-width:320px;text-align:center;">WhatsApp +92 339 8624992</p>
+      <div style="margin-top:${isSmall?10:20}px;width:${isSmall?25:40}px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    </div>`;
+  }
+  const itemsPerPage = 2;
+  const startIdx = (pageNum - 1) * itemsPerPage;
+  const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
+  return `<div class="page-inner" style="padding:${pad}px;padding-bottom:${pad + 18}px;position:relative;">
+    <div style="display:flex;flex-direction:column;gap:${isSmall?4:10}px;">
+      ${items.length ? items.map(item => `
+        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:${isSmall?4:10}px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:${isSmall?2:6}px;flex:1;">
+          <img src="${item.img}" alt="${item.name}" style="width:100%;height:${imgH}px;object-fit:contain;border-radius:3px;background:#f8f8f8;" onerror="this.style.display='none'">
+          <div style="font-size:${isSmall?8:fontSize}px;font-weight:600;color:#333;line-height:1.3;">${item.name}</div>
+        </div>
+      `).join('') : '<div style="color:#ccc;font-size:12px;padding:30px 0;text-align:center;">Products coming soon</div>'}
+    </div>
+    <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:${isSmall?7:10}px;color:#999;">${pageNumStr}</div>
+  </div>`;
+}
+
+function getPages(c){
+  const pages = [];
+  const products = PRODUCTS[c.code] || [];
+  const dims = getFlipDimensions();
+  for(let i=0;i<c.totalPages;i++){
+    const isCover=i===0;
+    const isBack=i===c.totalPages-1;
+    let bgColor=c.color,textColor='#fff';
+    if(isBack){bgColor='#222529';}
+    else if(!isCover){bgColor='#f7f5ef';textColor='#333';}
+    pages.push({html:buildPageHTML(c.name,c.color,i,c.totalPages,products,dims.width,dims.height),bg:bgColor,color:textColor});
+  }
+  return pages;
+}
+
+let flipInitialized = false;
+let currentFlipDims = null;
+function initFlipbook(){
+  const wrap = document.getElementById('flipbook');
+  const dims = getFlipDimensions();
+  currentFlipDims = dims;
+
+  if (flipInitialized) {
+    $(wrap).turn('destroy');
+    flipInitialized = false;
+  }
+
+  wrap.innerHTML = '';
+  wrap.style.width = dims.width + 'px';
+  wrap.style.height = dims.height + 'px';
+
+  const pages = getPages(cat);
+  pages.forEach((p,idx)=>{
+    const div = document.createElement('div');
+    div.className = 'page';
+    div.style.setProperty('background', p.bg, 'important');
+    const inner = document.createElement('div');
+    inner.className = 'page-inner';
+    inner.style.cssText = `width:100%;height:100%;color:${p.color};display:flex;align-items:center;justify-content:center;font-family:'Open Sans',sans-serif;`;
+    inner.innerHTML = p.html;
+    div.appendChild(inner);
+    wrap.appendChild(div);
+  });
+
+  $(wrap).turn({
+    width: dims.width,
+    height: dims.height,
+    autoCenter: true,
+    duration: dims.duration,
+    display: 'double',
+    acceleration: true,
+    gradients: true,
+    elevation: 50,
+    when: {
+      turned: function(e, page){
+        document.querySelectorAll('#flipbook .page').forEach((el, i) => {
+          if (pages[i]) el.style.setProperty('background', pages[i].bg, 'important');
+        });
+      }
+    }
+  });
+
+  flipInitialized = true;
+  totalPages = pages.length;
+  return pages;
+}
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const newDims = getFlipDimensions();
+    if (!currentFlipDims || newDims.width !== currentFlipDims.width || newDims.height !== currentFlipDims.height) {
+      const f = getFlip();
+      let currentPage = 1;
+      if (f) {
+        try { currentPage = f.turn('page'); } catch(e) {}
+      }
+      initFlipbook();
+      const f2 = getFlip();
+      if (f2) {
+        try { f2.turn('page', currentPage); } catch(e) {}
+      }
+    }
+  }, 250);
+});
+
+let totalPages = 0;
+
+function getFlip(){return document.getElementById('flipbook') ? $(document.getElementById('flipbook')) : null;}
+
+// Toolbar actions
+document.getElementById('homeBtn').addEventListener('click', ()=>{
+  window.location.href = '/';
+});
+document.getElementById('downloadBtn').addEventListener('click', async function(){
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  try{
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait',unit:'px',format:[420,560]});
+    const pages = getPages(cat);
+    const off = document.createElement('div');
+    off.style.cssText = 'position:fixed;left:-9999px;top:0;width:420px;height:560px;overflow:hidden;z-index:-1;';
+    document.body.appendChild(off);
+    for(let idx=0;idx<pages.length;idx++){
+      off.innerHTML = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${pages[idx].html}</div>`;
+      await new Promise(r=>setTimeout(r,150));
+      const imgs = off.querySelectorAll('img');
+      if(imgs.length) await Promise.all(Array.from(imgs).map(img=>new Promise(r=>{if(img.complete)r();else{img.onload=r;img.onerror=r}})));
+      const canvas = await html2canvas(off,{width:420,height:560,scale:2,useCORS:true,backgroundColor:null,logging:false});
+      if(idx>0) pdf.addPage([420,560],'portrait');
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,420,560);
+    }
+    document.body.removeChild(off);
+    pdf.save(`CoreSportswears-${cat.name.replace(/[^a-z0-9]/gi,'_')}-Catalogue.pdf`);
+  }catch(e){
+    console.error(e);
+    alert('Could not generate PDF.');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-download"></i>';
+});
+
+document.getElementById('prevBtn').addEventListener('click',()=>{const f=getFlip();if(f)f.turn('previous');});
+document.getElementById('nextBtn').addEventListener('click',()=>{const f=getFlip();if(f)f.turn('next');});
+
+document.getElementById('zoomInBtn').addEventListener('click',()=>{
+  if(currentZoom<2){currentZoom=Math.min(currentZoom+0.25,2);applyZoom();}
+});
+document.getElementById('zoomOutBtn').addEventListener('click',()=>{
+  if(currentZoom>0.5){currentZoom=Math.max(currentZoom-0.25,0.5);applyZoom();}
+});
+function applyZoom(){
+  document.getElementById('bookWrapper').style.transform = `scale(${currentZoom})`;
+  document.getElementById('bookContainer').classList.toggle('zoomed-in',currentZoom>1);
+}
+
+// Thumbnails
+const thumbOverlay = document.getElementById('thumbOverlay');
+const thumbGrid = document.getElementById('thumbGrid');
+document.getElementById('thumbBtn').addEventListener('click',()=>{
+  if(!thumbOverlay.classList.contains('open')){
+    renderThumbnails();
+    thumbOverlay.classList.add('open');
+  }else{
+    thumbOverlay.classList.remove('open');
+  }
+});
+document.getElementById('thumbCloseBtn').addEventListener('click',()=>thumbOverlay.classList.remove('open'));
+thumbOverlay.addEventListener('click',e=>{if(e.target===thumbOverlay)thumbOverlay.classList.remove('open');});
+
+function renderThumbnails(){
+  thumbGrid.innerHTML = '';
+  const pages = getPages(cat);
+  pages.forEach((p,idx)=>{
+    const item = document.createElement('div');
+    item.className = 'thumb-item';
+    const num = document.createElement('span');
+    num.className = 'thumb-num';
+    num.textContent = idx+1;
+    // Find product images in the page content
+    const temp = document.createElement('div');
+    temp.innerHTML = p.html;
+    const img = temp.querySelector('img');
+    if(img){
+      const clone = img.cloneNode();
+      item.appendChild(clone);
+    }else{
+      // Cover/back - use placeholder
+      const bg = document.createElement('div');
+      bg.style.cssText = `width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;padding:8px;text-align:center;color:${p.color};`;
+      bg.textContent = idx===0 ? cat.name : (idx===pages.length-1 ? 'Contact' : (pages[idx].html.match(/Page (\d+)/)?.[1]||''  ));
+      item.appendChild(bg);
+    }
+    item.appendChild(num);
+    item.addEventListener('click',()=>{
+      const f=getFlip();
+      if(f){f.turn('page',idx+1);thumbOverlay.classList.remove('open');}
+    });
+    thumbGrid.appendChild(item);
+  });
+}
+
+// Fullscreen
+document.getElementById('fullscreenBtn').addEventListener('click',()=>{
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }else{
+    document.exitFullscreen().catch(()=>{});
+  }
+});
+
+document.addEventListener('keydown',e=>{
+  const f=getFlip();
+  if(!f)return;
+  if(e.key==='ArrowRight'){e.preventDefault();f.turn('next');}
+  if(e.key==='ArrowLeft'){e.preventDefault();f.turn('previous');}
+  if(e.key==='Escape'){
+    if(thumbOverlay.classList.contains('open'))thumbOverlay.classList.remove('open');
+  }
+  if(e.ctrlKey&&e.key==='+'){e.preventDefault();document.getElementById('zoomInBtn').click();}
+  if(e.ctrlKey&&e.key==='-'){e.preventDefault();document.getElementById('zoomOutBtn').click();}
+});
+
+// Click on page to navigate
+document.addEventListener('click',e=>{
+  const flipEl = document.getElementById('flipbook');
+  if(!flipEl||!flipEl.contains(e.target))return;
+  if(e.target.closest('.tb-btn')||e.target.closest('.icon-btn'))return;
+  const rect = flipEl.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const f = getFlip();
+  if(!f)return;
+  if(x<rect.width/2){f.turn('previous');}
+  else{f.turn('next');}
+});
+
+// Init
+const pagesData = initFlipbook();
+document.title = `${cat.name} — Flipbook Viewer | Core Sportswears`;
+
+(async function loadCatalog() {
+  try {
+    const fetched = await fetchAllProducts();
+    CATEGORIES.forEach(c => {
+      if (fetched[c.code] && fetched[c.code].length > 0) {
+        PRODUCTS[c.code] = fetched[c.code];
+      }
+    });
+    console.log('Products loaded from WooCommerce API');
+  } catch (e) {
+    console.warn('Could not fetch from WooCommerce API, using fallback data.', e);
+  }
+})();
+</script>
+</body>
+</html>

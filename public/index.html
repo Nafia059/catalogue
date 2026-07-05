@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Sportswears — Catalogue</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+  :root{
+    --bg: #ffffff;
+    --bg-panel: #f4f4f4;
+    --ink: #333333;
+    --ink-dim: #777777;
+    --line: #e0e0e0;
+    --accent: #00991a;
+    --accent-2: #212529;
+    --accent-ink: #ffffff;
+    --radius: 4px;
+    --font-display: 'Poppins', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:var(--font-display);
+    font-weight:600;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5vw;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:var(--font-display);
+    font-size:22px;
+    font-weight:700;
+    color:var(--accent);
+  }
+  nav.links{display:flex; gap:32px; font-size:12px; font-weight:600; text-transform:uppercase;}
+  nav.links a{color:#222529; transition:color .2s;}
+  nav.links a:hover{color:var(--accent);}
+  .nav-cta{
+    padding:10px 20px; background:var(--accent); color:#fff;
+    font-size:12px; font-weight:600; text-transform:uppercase;
+    border-radius:var(--radius);
+  }
+  @media (max-width:800px){ nav.links{display:none;} }
+
+  .hero{
+    text-align:center;
+    padding:100px 5vw 60px;
+  }
+  .hero h1{
+    font-size:44px;
+    font-weight:700;
+    margin-bottom:15px;
+    color:#222529;
+  }
+  .hero p{
+    color:var(--ink-dim);
+    font-size:16px;
+    line-height:1.7;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; justify-content:center;}
+  .btn{
+    padding:12px 28px; font-size:14px;
+    font-weight:600; border-radius:var(--radius); border:1px solid transparent;
+    cursor:pointer; transition:transform .15s ease, background .2s;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:#008a18;}
+  .btn-ghost{border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink-dim);}
+
+  .section{padding:80px 5vw;}
+  .section-head{
+    text-align:center;
+    margin-bottom:50px;
+  }
+  .section-head h2{font-size:44px; font-weight:700; color:#222529;}
+  .section-head p{color:var(--ink-dim); max-width:700px; margin:10px auto 0; font-size:16px; line-height:1.7;}
+
+  .cat-grid{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:40px;
+  }
+  .cat-card{
+    background:none;
+    border:none;
+    width:240px;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+  }
+
+  .book-scene{
+    position:relative;
+    width:210px; height:180px;
+    margin-bottom:16px;
+    transition:transform .35s ease;
+    transform-style:preserve-3d;
+    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
+  }
+  .cat-card:hover .book-scene{ transform:translateY(-10px) scale(1.03); }
+
+  .book-open{
+    position:absolute; left:6px; bottom:6px;
+    width:150px; height:158px;
+    display:flex;
+    transform:perspective(900px) rotateX(8deg) rotate(-3deg);
+    will-change:transform;
+  }
+  .book-open .leaf{
+    position:relative; width:50%; height:100%;
+    background:linear-gradient(100deg,#f7f5ef,#e8e4d6);
+  }
+  .book-open .leaf:first-child{ border-radius:3px 0 0 3px; box-shadow:inset -8px 0 14px -10px rgba(0,0,0,.3); }
+  .book-open .leaf:last-child{ border-radius:0 3px 3px 0; box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.3); }
+  .book-open .leaf .shot{
+    position:absolute; left:10%; right:10%;
+    background-color:rgba(20,22,26,.14); background-size:cover; background-position:center; border-radius:1px;
+  }
+  .book-open .stack{
+    position:absolute; left:2px; right:2px; bottom:-3px; height:10px;
+    background:repeating-linear-gradient(180deg,#dedad0 0 1px, #cfcabb 1px 2px);
+    border-radius:0 0 3px 3px;
+    z-index:-1;
+  }
+  .book-open .ribbon{
+    position:absolute; top:-4px; left:calc(50% - 5px); width:10px; height:26px;
+    background:var(--accent); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
+    z-index:3;
+  }
+
+  .book-cover{
+    position:absolute; right:0; bottom:0;
+    width:78px; height:172px;
+    border-radius:2px 6px 6px 2px;
+    transform:perspective(900px) rotateY(22deg) rotate(5deg);
+    box-shadow:12px 18px 26px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.06);
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
+    background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
+    will-change:transform;
+  }
+  .book-cover .code{
+    writing-mode:vertical-rl;
+    font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
+    color:rgba(255,255,255,.92); text-transform:uppercase;
+  }
+
+  .cat-label{
+    font-family:var(--font-display);
+    font-size:17px;
+    font-weight:600;
+    line-height:1.2;
+    color:#222529;
+    opacity:0;
+    transition:opacity .3s ease, color .3s ease;
+  }
+  .cat-card:hover .cat-label, .cat-card:focus-visible .cat-label{
+    opacity:1;
+    color:var(--accent);
+  }
+  .cat-label small{
+    display:block; margin-top:6px;
+    font-weight:400;
+    font-size:13px; color:var(--ink-dim);
+  }
+
+  .strip{
+    padding:70px 5vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px;
+  }
+  .strip .step .num{font-family:var(--font-display); font-size:34px; font-weight:600; color:var(--accent);}
+  .strip .step h4{font-size:15px; margin-top:8px; font-weight:600;}
+  .strip .step p{font-size:13px; color:var(--ink-dim); margin-top:6px;}
+
+  footer{padding:60px 5vw 40px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-dim);}
+  footer .foot-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
+  footer .foot-top a{display:block; margin-top:8px; color:var(--ink);}
+  footer .bottom{border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">CORE <span>SPORTS</span>WEARS</div>
+  <nav class="links">
+    <a href="#home">Home</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#how">How It Works</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="nav-cta" href="https://api.whatsapp.com/send/?phone=923328624992" target="_blank">WhatsApp Us</a>
+</header>
+
+<section class="hero" id="home">
+  <h1>The 2026 Product Catalogue</h1>
+  <p>Ski &amp; snow wear, streetwear, sportswear, bags and headwear — browse every
+    category in-line, or download the full PDF pack to send to your team.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#catalogue">Browse Catalogue</a>
+    <a class="btn btn-ghost" href="https://coresportswears.com/contact-us/" target="_blank">Request A Quote</a>
+  </div>
+</section>
+
+<section class="section" id="catalogue">
+  <div class="section-head">
+    <div>
+      <h2>Explore Our Catalogue</h2>
+      <p>Tap a category to flip through the collection online.</p>
+    </div>
+  </div>
+  <div class="cat-grid" id="catGrid"></div>
+</section>
+
+<section class="strip" id="how">
+  <div class="step"><div class="num">01</div><h4>Open a Catalogue</h4><p>Click any category card to launch the flipbook viewer.</p></div>
+  <div class="step"><div class="num">02</div><h4>Browse Pages</h4><p>Click the page corners or use arrows to flip through.</p></div>
+  <div class="step"><div class="num">03</div><h4>Download PDF</h4><p>Grab the full catalogue PDF from the viewer header.</p></div>
+  <div class="step"><div class="num">04</div><h4>Send Your Brief</h4><p>WhatsApp us your tech pack, logo or reference image.</p></div>
+</section>
+
+<footer id="contact">
+  <div class="foot-top">
+    <div>
+      <div class="logo">CORE SPORTSWEARS</div>
+      <a href="mailto:coresportswears@gmail.com">coresportswears@gmail.com</a>
+      <a href="tel:+923398624992">+92 339 8624992</a>
+      <a href="#">Sadra Badra Town, Daak Wala Stop Daska Road, Sialkot, Pakistan</a>
+    </div>
+    <div>
+      <a href="https://coresportswears.com/product-category/ski-snow-wear/">Ski &amp; Snow Wear</a>
+      <a href="https://coresportswears.com/product-category/custom-streetwear/">Streetwear</a>
+      <a href="https://coresportswears.com/product-category/custom-sportswear/">Sportswear</a>
+      <a href="https://coresportswears.com/product-category/custom-bags/">Bags</a>
+    </div>
+  </div>
+  <div class="bottom">
+    <span>Core Sportswears &copy; 2026 All Rights Reserved</span>
+    <span>Catalogue template</span>
+  </div>
+</footer>
+
+
+
+<script>
+const CATEGORIES = [
+  {
+    code: "CAT-01",
+    name: "Ski & Snow Wear",
+    desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.",
+    slug: "ski-snow-wear",
+    color: "#2f6690",
+    pdfUrl: "#",
+    totalPages: 5
+  },
+  {
+    code: "CAT-02",
+    name: "Streetwear",
+    desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",
+    slug: "custom-streetwear",
+    color: "#ff4b2b",
+    pdfUrl: "#",
+    totalPages: 5
+  },
+  {
+    code: "CAT-03",
+    name: "Sportswear",
+    desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",
+    slug: "custom-sportswear",
+    color: "#1f8a5b",
+    pdfUrl: "#",
+    totalPages: 4
+  },
+  {
+    code: "CAT-04",
+    name: "Bags",
+    desc: "Duffel bags, sports backpacks, fanny bags & tote bags.",
+    slug: "custom-bags",
+    color: "#8a5cf6",
+    pdfUrl: "#",
+    totalPages: 3
+  },
+  {
+    code: "CAT-05",
+    name: "Headwear & Accessories",
+    desc: "Caps, beanies, patches, sleeves, socks & custom trims.",
+    slug: "",
+    color: "#d1a13d",
+    pdfUrl: "#",
+    totalPages: 4
+  },
+];
+
+const FALLBACK_PRODUCTS = {
+  "CAT-01": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/front-view-snow-pant.png', name: '15K Snowwear Pant', desc: 'Waterproof snow pants with 15K rating.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/cordura-snowboarding-pant-3.webp', name: '20K Snowboarding Pants', desc: 'Premium 20K waterproof, taped seams, Cordura.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/12/ski-pant-front.jpg', name: 'Softshell Snowboard Pants', desc: 'Stretch comfort with DWR weather resistance.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/hALF-HALF-PANT-5.webp', name: 'Half-Half Baggy Snow Pant', desc: 'Two-tone baggy silhouette with boot gaiter.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/sherpa-fleece-pant_05_1000x1000.webp', name: 'Sherpa Fleece Snow Pants', desc: 'Serious warmth with sherpa fleece lining.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_sportswears_pants_side.webp', name: 'Fleece Lined Softshell Pant', desc: 'Fleece-lined softshell with weather-resistant face.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/ski_bib_1000x1000.webp', name: 'Snowboarding &amp; Ski Bib', desc: '10K waterproof bib, adjustable suspenders.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/CORE_Camo_Hoodie_Tall_1000x1000.webp', name: 'Camouflage Tall Hoodie', desc: 'Heavyweight cotton camo hoodie in tall sizes.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/ski-balaclava.webp', name: 'Fleece Ski Balaclava', desc: 'Custom fleece balaclava with embroidery options.' }
+  ],
+  "CAT-02": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/blue_longsleeve_1000x1000.webp', name: 'Basic Long Sleeve T-Shirt', desc: 'Combed cotton long sleeve tee.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/plum_vneck_front_back_straight_hem.webp', name: 'Basic V-Neck T-Shirt', desc: 'Classic V-neck in premium single jersey cotton.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/charcoal_pocket_tshirt_front_1000x1000.webp', name: 'Pocket T-Shirt', desc: 'Relaxed fit with chest pocket.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/heather_grey_tshirt.webp', name: 'Curved Hem Basic T-Shirt', desc: 'Modern curved hem with side splits.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/dark_grey_tshirt_1000x1000.webp', name: 'Dark Grey Single Jersey T-Shirt', desc: 'Premium dark grey tee, pre-shrunk fabric.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/cotton-stripe-stitching-front.webp', name: 'Stripe Stitched Cotton T-Shirt', desc: 'Color stripe stitching detail on front.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/03/regular-fit-asid-washed-cotton-shirt-front.webp', name: 'Acid Washed Regular Fit Tee', desc: 'Acid washed finish for a vintage look.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/bricks-shirt-front-1.webp', name: 'Graphic Printed T-Shirt', desc: 'Custom graphic print on premium tee.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/Rhine-stone-drop-shoulder-tshirt-1.webp', name: 'Drop Shoulder Rhinestone T-Shirt', desc: 'Drop shoulder cut with rhinestone detailing.' }
+  ],
+  "CAT-03": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_jacket_converted.webp', name: 'Basketball Uniforms', desc: 'Custom reversible jerseys, shorts, compression.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/sublimation-printing.webp', name: 'Soccer Uniforms', desc: 'Custom sublimation jerseys, shorts, socks.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/screen_printing_collage.webp', name: 'Rugby &amp; Football', desc: 'Durable jerseys, pants, and training gear.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_reflective_1000x1000.webp', name: 'Baseball &amp; Cricket', desc: 'Custom jerseys, sublimation, embroidered logos.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_logo.webp', name: 'Cycling &amp; Fitness', desc: 'Compression tops, jerseys, gym shorts, leggings.' }
+  ],
+  "CAT-04": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing.webp', name: 'Duffel Bags', desc: 'Large-capacity duffels for gym and travel.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing-1.webp', name: 'Sports Backpacks', desc: 'Durable backpacks, multiple compartments.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp', name: 'Fanny Packs &amp; Belt Bags', desc: 'Trendy waist packs, custom prints.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp', name: 'Tote &amp; Shopping Bags', desc: 'Canvas, cotton, polyester totes.' }
+  ],
+  "CAT-05": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Flat-Embroidery.jpg', name: 'Custom Caps &amp; Hats', desc: 'Snapback, dad hats, trucker caps.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/3D-Embroidery.jpg', name: 'Beanies &amp; Winter Hats', desc: 'Knitted, cuffed, slouchy, fleece beanies.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Chenille-Embroidery.jpg', name: 'Gloves, Scarves &amp; Wraps', desc: 'Touchscreen gloves, neck gaiters, headbands.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg', name: 'Patches &amp; Badges', desc: 'PVC, rubber, embroidered, leather patches.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/custom_rubber_patch.webp', name: 'Custom Rubber Patches', desc: '3D rubber logos, PVC patches.' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_woven_label.webp', name: 'Woven Labels &amp; Tags', desc: 'Custom woven labels, satin tags, neck tape.' }
+  ]
+};
+
+let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
+
+async function fetchFromWC(endpoint, params = {}) {
+  const q = new URLSearchParams({ endpoint, ...params }).toString();
+  const res = await fetch(`/api/wc?${q}`);
+  if (!res.ok) throw new Error(`WC API error: ${res.status}`);
+  return res.json();
+}
+
+async function fetchAllProducts() {
+  const slugToCode = {
+    "ski-snow-wear": "CAT-01",
+    "outerwear": "CAT-01",
+    "ski-snowboarding-pants": "CAT-01",
+    "custom-ski-suits": "CAT-01",
+    "hoodies": "CAT-01",
+    "ski-snowboard-accessories": "CAT-01",
+    "ski-balaclava-neck-warmers": "CAT-01",
+    "custom-streetwear": "CAT-02",
+    "custom-t-shirts": "CAT-02",
+    "basic-t-shirts": "CAT-02",
+    "oversized-streetwear-t-shirts": "CAT-02",
+    "washed-dyed-t-shirts": "CAT-02",
+    "graphic-printed-t-shirts": "CAT-02",
+    "custom-sportswear": "CAT-03",
+    "custom-bags": "CAT-04",
+  };
+
+  const all = [];
+  let page = 1;
+  while (true) {
+    const data = await fetchFromWC('products', { per_page: '100', page: String(page) });
+    if (!data || !data.length) break;
+    all.push(...data);
+    page++;
+  }
+
+  const grouped = {};
+  CATEGORIES.forEach(c => { grouped[c.code] = []; });
+
+  all.forEach(p => {
+    const matched = new Set();
+    (p.categories || []).forEach(cat => {
+      const code = slugToCode[cat.slug];
+      if (code) matched.add(code);
+    });
+    if (matched.size) {
+      const code = [...matched][0];
+      const name = p.name || '';
+      const desc = p.short_description ? p.short_description.replace(/<[^>]*>/g, '').trim() : '';
+      const img = (p.images && p.images[0]) ? p.images[0].src : '';
+      if (img && !grouped[code].some(ex => ex.img === img)) {
+        grouped[code].push({ img, name, desc });
+      }
+    }
+  });
+
+  return grouped;
+}
+
+function ensureEven(n) { return n + (n % 2); }
+function updateTotalPages() {
+  CATEGORIES.forEach(cat => {
+    const count = (PRODUCTS[cat.code] || []).length;
+    cat.totalPages = ensureEven(Math.max(4, Math.ceil(count / 4) + 2));
+  });
+}
+
+updateTotalPages();
+renderCategories();
+
+(async function loadCatalog() {
+  try {
+    const fetched = await fetchAllProducts();
+    let updated = false;
+    CATEGORIES.forEach(c => {
+      if (fetched[c.code] && fetched[c.code].length > 0) {
+        PRODUCTS[c.code] = fetched[c.code];
+        updated = true;
+      }
+    });
+    if (updated) {
+      updateTotalPages();
+      renderCategories();
+      console.log('Catalogue updated from WooCommerce API');
+    }
+  } catch (e) {
+    console.warn('Could not fetch from WooCommerce API, using fallback data.', e);
+  }
+})();
+
+function renderCategories() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    const products = PRODUCTS[cat.code] || [];
+    const imgs = products.slice(0, 4);
+    card.innerHTML = `
+      <div class="book-scene">
+        <div class="book-open">
+          <div class="ribbon"></div>
+          <div class="leaf">
+            <div class="shot" style="top:14%; height:26%; background-image:url('${imgs[0] ? imgs[0].img : ''}')"></div>
+            <div class="shot" style="top:46%; height:38%; background-image:url('${imgs[1] ? imgs[1].img : ''}')"></div>
+          </div>
+          <div class="leaf">
+            <div class="shot" style="top:14%; height:40%; background-image:url('${imgs[2] ? imgs[2].img : ''}')"></div>
+            <div class="shot" style="top:60%; height:24%; background-image:url('${imgs[3] ? imgs[3].img : ''}')"></div>
+          </div>
+          <div class="stack"></div>
+        </div>
+        <div class="book-cover" style="background-color:${cat.color}">
+          <span class="code">${cat.code}</span>
+        </div>
+      </div>
+      <div class="cat-label" style="color:${cat.color}">
+        ${cat.name}
+        <small>Catalogue &mdash; tap to view</small>
+      </div>`;
+    card.tabIndex = 0;
+    card.addEventListener('click', () => openCatalogue(i));
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openCatalogue(i); });
+    grid.appendChild(card);
+  });
+}
+
+function openCatalogue(i) {
+  window.open('/flipbook-viewer.html?cat=' + i, '_blank');
+}
+</script>
+</body>
+</html>
