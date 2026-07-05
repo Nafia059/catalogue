@@ -430,7 +430,6 @@ const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH){
   const isSmall = pageW < 500;
   const pad = isSmall ? 8 : 16;
-  const imgH = isSmall ? Math.round(pageH * 0.18) : 100;
   const fontSize = isSmall ? 9 : 11;
   const titleSize = isSmall ? 14 : 22;
   const pageNumStr = `${pageNum + 1} / ${totalPages}`;
@@ -454,12 +453,12 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
   const itemsPerPage = 2;
   const startIdx = (pageNum - 1) * itemsPerPage;
   const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
-  return `<div class="page-inner" style="padding:${pad}px;padding-bottom:${pad + 18}px;position:relative;">
-    <div style="display:flex;flex-direction:column;gap:${isSmall?4:10}px;">
+  return `<div class="page-inner" style="padding:${pad}px;padding-bottom:${pad + 18}px;position:relative;height:100%;">
+    <div style="display:flex;flex-direction:column;gap:${isSmall?4:8}px;height:100%;">
       ${items.length ? items.map(item => `
-        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:${isSmall?4:10}px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:${isSmall?2:6}px;flex:1;">
-          <img src="${item.img}" alt="${item.name}" style="width:100%;height:${imgH}px;object-fit:contain;border-radius:3px;background:#f8f8f8;" onerror="this.style.display='none'">
-          <div style="font-size:${isSmall?8:fontSize}px;font-weight:600;color:#333;line-height:1.3;">${item.name}</div>
+        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:${isSmall?4:8}px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;overflow:hidden;">
+          <img src="${item.img}" alt="${item.name}" style="width:100%;flex:1;object-fit:contain;border-radius:3px;" onerror="this.style.display='none'">
+          <div style="font-size:${isSmall?8:fontSize}px;font-weight:600;color:#333;line-height:1.3;flex-shrink:0;">${item.name}</div>
         </div>
       `).join('') : '<div style="color:#ccc;font-size:12px;padding:30px 0;text-align:center;">Products coming soon</div>'}
     </div>
