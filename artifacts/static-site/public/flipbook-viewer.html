@@ -96,7 +96,6 @@ body::before{
   pointer-events:none;z-index:10;
 }
 #flipbook{
-  width:840px;height:560px;
   position:relative;z-index:1;
   border-radius:2px;
   box-shadow:0 4px 24px rgba(0,0,0,0.4);
@@ -248,20 +247,17 @@ body::before{
 /* Responsive wrapper */
 .book-responsive{display:flex;align-items:center;justify-content:center;}
 @media (max-width:1050px){
-  .book-responsive{transform:scale(0.8);transform-origin:center center;}
   .toolbar-brand{font-size:13px;}
   .tb-btn{width:30px;height:30px;font-size:13px;}
   .flipbook-toolbar{padding:0 10px;}
 }
 @media (max-width:720px){
-  .book-responsive{transform:scale(0.55);transform-origin:center center;}
   .flipbook-toolbar{height:44px;padding:0 6px;}
   .tb-btn{width:28px;height:28px;font-size:12px;}
   .toolbar-brand{font-size:11px;}
   .book-container{padding:56px 4px 20px;}
 }
 @media (max-width:480px){
-  .book-responsive{transform:scale(0.4);transform-origin:center center;}
   .toolbar-brand{display:none;}
   .tb-btn{width:24px;height:24px;font-size:10px;}
   .flipbook-toolbar{height:40px;padding:0 4px;}
@@ -362,6 +358,25 @@ const FALLBACK_PRODUCTS = {
 let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
 let currentZoom = 1;
 
+function getFlipDimensions() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const availW = vw - 40;
+  const availH = vh - 120;
+  if (availW <= 480) {
+    const w = Math.min(availW, 400);
+    const h = Math.round(w * 0.667);
+    return { width: w, height: h, duration: 300 };
+  } else if (availW <= 720) {
+    const w = Math.min(availW, 560);
+    const h = Math.round(w * 0.667);
+    return { width: w, height: h, duration: 400 };
+  } else if (availW <= 1050) {
+    return { width: 680, height: 450, duration: 500 };
+  }
+  return { width: 840, height: 560, duration: 600 };
+}
+
 async function fetchFromWC(endpoint, params = {}) {
   const q = new URLSearchParams({ endpoint, ...params }).toString();
   const res = await fetch(`/api/wc?${q}`);
@@ -459,9 +474,20 @@ function getPages(c){
 }
 
 let flipInitialized = false;
+let currentFlipDims = null;
 function initFlipbook(){
   const wrap = document.getElementById('flipbook');
+  const dims = getFlipDimensions();
+  currentFlipDims = dims;
+
+  if (flipInitialized) {
+    $(wrap).turn('destroy');
+    flipInitialized = false;
+  }
+
   wrap.innerHTML = '';
+  wrap.style.width = dims.width + 'px';
+  wrap.style.height = dims.height + 'px';
 
   const pages = getPages(cat);
   pages.forEach((p,idx)=>{
@@ -477,10 +503,10 @@ function initFlipbook(){
   });
 
   $(wrap).turn({
-    width: 840,
-    height: 560,
+    width: dims.width,
+    height: dims.height,
     autoCenter: true,
-    duration: 600,
+    duration: dims.duration,
     display: 'double',
     acceleration: true,
     gradients: true,
@@ -498,6 +524,26 @@ function initFlipbook(){
   totalPages = pages.length;
   return pages;
 }
+
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    const newDims = getFlipDimensions();
+    if (!currentFlipDims || newDims.width !== currentFlipDims.width || newDims.height !== currentFlipDims.height) {
+      const f = getFlip();
+      let currentPage = 1;
+      if (f) {
+        try { currentPage = f.turn('page'); } catch(e) {}
+      }
+      initFlipbook();
+      const f2 = getFlip();
+      if (f2) {
+        try { f2.turn('page', currentPage); } catch(e) {}
+      }
+    }
+  }, 250);
+});
 
 let totalPages = 0;
 
