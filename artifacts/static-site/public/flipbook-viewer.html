@@ -467,17 +467,25 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
   </div>`;
 }
 
+function calcTotalPages(code){
+  const products = PRODUCTS[code] || [];
+  const itemsPerPage = 2;
+  const contentPages = Math.ceil(products.length / itemsPerPage);
+  return 1 + Math.max(contentPages, 1) + 1;
+}
+
 function getPages(c){
   const pages = [];
   const products = PRODUCTS[c.code] || [];
   const dims = getFlipDimensions();
-  for(let i=0;i<c.totalPages;i++){
+  const totalPages = calcTotalPages(c.code);
+  for(let i=0;i<totalPages;i++){
     const isCover=i===0;
-    const isBack=i===c.totalPages-1;
+    const isBack=i===totalPages-1;
     let bgColor=c.color,textColor='#fff';
     if(isBack){bgColor='#222529';}
     else if(!isCover){bgColor='#f7f5ef';textColor='#333';}
-    pages.push({html:buildPageHTML(c.name,c.color,i,c.totalPages,products,dims.width,dims.height),bg:bgColor,color:textColor});
+    pages.push({html:buildPageHTML(c.name,c.color,i,totalPages,products,dims.width,dims.height),bg:bgColor,color:textColor});
   }
   return pages;
 }
@@ -699,6 +707,10 @@ document.title = `${cat.name} — Flipbook Viewer | Core Sportswears`;
       }
     });
     console.log('Products loaded from WooCommerce API');
+    const currentPage = getFlip() ? getFlip().turn('page') : 1;
+    initFlipbook();
+    const f = getFlip();
+    if (f && currentPage) { try { f.turn('page', currentPage); } catch(e) {} }
   } catch (e) {
     console.warn('Could not fetch from WooCommerce API, using fallback data.', e);
   }
