@@ -437,7 +437,7 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
   if(pageNum === 0){
     return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 3}px;position:relative;">
       <div style="font-size:${isSmall?6:9}px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:${isSmall?8:14}px;">Core Sportswears · 2026</div>
-      <h2 style="font-size:${isSmall?16:titleSize || 28}px;margin-bottom:${isSmall?6:10}px;color:#fff;">${name}</h2>
+      <h2 style="font-size:${isSmall?16:28}px;margin-bottom:${isSmall?6:10}px;color:#fff;">${name}</h2>
       <p style="font-size:${isSmall?9:12}px;max-width:300px;color:rgba(255,255,255,.6);text-align:center;">Wholesale & Private Label Catalogue</p>
       <div style="margin-top:${isSmall?14:24}px;width:${isSmall?24:40}px;height:3px;background:${color};border-radius:2px;"></div>
     </div>`;
