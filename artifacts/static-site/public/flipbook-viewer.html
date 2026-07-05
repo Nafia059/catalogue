@@ -427,51 +427,57 @@ const params = new URLSearchParams(window.location.search);
 const catIndex = parseInt(params.get('cat')) || 0;
 const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
-function buildPageHTML(name, color, pageNum, totalPages, products){
+function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH){
+  const isSmall = pageW < 500;
+  const pad = isSmall ? 8 : 16;
+  const imgH = isSmall ? Math.round(pageH * 0.18) : 100;
+  const fontSize = isSmall ? 9 : 11;
+  const titleSize = isSmall ? 14 : 22;
   const pageNumStr = `${pageNum + 1} / ${totalPages}`;
   if(pageNum === 0){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;position:relative;">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:16px;">Core Sportswears · 2026</div>
-      <h2 style="font-size:32px;margin-bottom:12px;">${name}</h2>
-      <p style="font-size:13px;max-width:320px;color:rgba(255,255,255,.7);text-align:center;">Wholesale & Private Label Catalogue</p>
-      <div style="margin-top:30px;width:50px;height:3px;background:${color};border-radius:2px;"></div>
-      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
+      <div style="font-size:${isSmall?7:10}px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:${isSmall?8:16}px;">Core Sportswears · 2026</div>
+      <h2 style="font-size:${isSmall?18:titleSize}px;margin-bottom:${isSmall?6:12}px;">${name}</h2>
+      <p style="font-size:${isSmall?10:13}px;max-width:320px;color:rgba(255,255,255,.7);text-align:center;">Wholesale & Private Label Catalogue</p>
+      <div style="margin-top:${isSmall?16:30}px;width:${isSmall?30:50}px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
     </div>`;
   }
   if(pageNum === totalPages - 1){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:30px;position:relative;">
-      <h2 style="font-size:24px;margin-bottom:12px;">Let's Build Your Collection</h2>
-      <p style="font-size:13px;max-width:320px;text-align:center;">WhatsApp +92 339 8624992</p>
-      <div style="margin-top:20px;width:40px;height:3px;background:${color};border-radius:2px;"></div>
-      <div style="position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
+      <h2 style="font-size:${isSmall?16:24}px;margin-bottom:${isSmall?6:12}px;">Let's Build Your Collection</h2>
+      <p style="font-size:${isSmall?10:13}px;max-width:320px;text-align:center;">WhatsApp +92 339 8624992</p>
+      <div style="margin-top:${isSmall?10:20}px;width:${isSmall?25:40}px;height:3px;background:${color};border-radius:2px;"></div>
+      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
     </div>`;
   }
   const itemsPerPage = 2;
   const startIdx = (pageNum - 1) * itemsPerPage;
   const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
-  return `<div class="page-inner" style="padding:16px;position:relative;">
-    <div style="display:flex;flex-direction:column;gap:10px;">
+  return `<div class="page-inner" style="padding:${pad}px;padding-bottom:${pad + 18}px;position:relative;">
+    <div style="display:flex;flex-direction:column;gap:${isSmall?4:10}px;">
       ${items.length ? items.map(item => `
-        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;">
-          <img src="${item.img}" alt="${item.name}" style="width:100%;height:100px;object-fit:contain;border-radius:3px;background:#f8f8f8;" onerror="this.style.display='none'">
-          <div style="font-size:11px;font-weight:600;color:#333;line-height:1.3;">${item.name}</div>
+        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:${isSmall?4:10}px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:${isSmall?2:6}px;flex:1;">
+          <img src="${item.img}" alt="${item.name}" style="width:100%;height:${imgH}px;object-fit:contain;border-radius:3px;background:#f8f8f8;" onerror="this.style.display='none'">
+          <div style="font-size:${isSmall?8:fontSize}px;font-weight:600;color:#333;line-height:1.3;">${item.name}</div>
         </div>
       `).join('') : '<div style="color:#ccc;font-size:12px;padding:30px 0;text-align:center;">Products coming soon</div>'}
     </div>
-    <div style="position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:11px;color:#999;">${pageNumStr}</div>
+    <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:${isSmall?7:10}px;color:#999;">${pageNumStr}</div>
   </div>`;
 }
 
 function getPages(c){
   const pages = [];
   const products = PRODUCTS[c.code] || [];
+  const dims = getFlipDimensions();
   for(let i=0;i<c.totalPages;i++){
     const isCover=i===0;
     const isBack=i===c.totalPages-1;
     let bgColor=c.color,textColor='#fff';
     if(isBack){bgColor='#222529';}
     else if(!isCover){bgColor='#f7f5ef';textColor='#333';}
-    pages.push({html:buildPageHTML(c.name,c.color,i,c.totalPages,products),bg:bgColor,color:textColor});
+    pages.push({html:buildPageHTML(c.name,c.color,i,c.totalPages,products,dims.width,dims.height),bg:bgColor,color:textColor});
   }
   return pages;
 }
