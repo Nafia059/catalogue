@@ -2,3 +2,8 @@ artifacts/
 attached_assets/
 lib/
 scripts/
+server.js
+.vercelignore
+.npmrc
+tsconfig*.json
+.replit*
