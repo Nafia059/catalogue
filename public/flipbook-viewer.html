@@ -429,46 +429,61 @@ const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
 function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH){
   const isSmall = pageW < 500;
-  const pad = isSmall ? 8 : 16;
-  const fontSize = isSmall ? 9 : 11;
-  const titleSize = isSmall ? 14 : 22;
-  const pageNumStr = `${pageNum + 1} / ${totalPages}`;
+  const pad = isSmall ? 6 : 12;
+  const fontSize = isSmall ? 7 : 10;
+  const headerSize = isSmall ? 8 : 12;
+  const catSize = isSmall ? 7 : 10;
+  const ifnt = isSmall ? 7 : 9;
   if(pageNum === 0){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
-      <div style="font-size:${isSmall?7:10}px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.6);margin-bottom:${isSmall?8:16}px;">Core Sportswears · 2026</div>
-      <h2 style="font-size:${isSmall?18:titleSize}px;margin-bottom:${isSmall?6:12}px;">${name}</h2>
-      <p style="font-size:${isSmall?10:13}px;max-width:320px;color:rgba(255,255,255,.7);text-align:center;">Wholesale & Private Label Catalogue</p>
-      <div style="margin-top:${isSmall?16:30}px;width:${isSmall?30:50}px;height:3px;background:${color};border-radius:2px;"></div>
-      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 3}px;position:relative;">
+      <div style="font-size:${isSmall?6:9}px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:${isSmall?8:14}px;">Core Sportswears · 2026</div>
+      <h2 style="font-size:${isSmall?16:titleSize || 28}px;margin-bottom:${isSmall?6:10}px;color:#fff;">${name}</h2>
+      <p style="font-size:${isSmall?9:12}px;max-width:300px;color:rgba(255,255,255,.6);text-align:center;">Wholesale & Private Label Catalogue</p>
+      <div style="margin-top:${isSmall?14:24}px;width:${isSmall?24:40}px;height:3px;background:${color};border-radius:2px;"></div>
     </div>`;
   }
   if(pageNum === totalPages - 1){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 2}px;position:relative;">
-      <h2 style="font-size:${isSmall?16:24}px;margin-bottom:${isSmall?6:12}px;">Let's Build Your Collection</h2>
-      <p style="font-size:${isSmall?10:13}px;max-width:320px;text-align:center;">WhatsApp +92 339 8624992</p>
-      <div style="margin-top:${isSmall?10:20}px;width:${isSmall?25:40}px;height:3px;background:${color};border-radius:2px;"></div>
-      <div style="position:absolute;bottom:${isSmall?4:10}px;left:0;right:0;text-align:center;font-size:${isSmall?8:11}px;color:rgba(255,255,255,0.4);">${pageNumStr}</div>
+    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 3}px;position:relative;">
+      <h2 style="font-size:${isSmall?14:22}px;margin-bottom:${isSmall?6:10}px;">Let's Build Your Collection</h2>
+      <p style="font-size:${isSmall?9:12}px;max-width:300px;text-align:center;">WhatsApp +92 339 8624992</p>
+      <div style="margin-top:${isSmall?10:18}px;width:${isSmall?20:35}px;height:3px;background:${color};border-radius:2px;"></div>
     </div>`;
   }
-  const itemsPerPage = 2;
+  const itemsPerPage = 4;
   const startIdx = (pageNum - 1) * itemsPerPage;
   const items = (products||[]).slice(startIdx, startIdx + itemsPerPage);
-  return `<div class="page-inner" style="padding:${pad}px;padding-bottom:${pad + 18}px;position:relative;height:100%;">
-    <div style="display:flex;flex-direction:column;gap:${isSmall?4:8}px;height:100%;">
-      ${items.length ? items.map(item => `
-        <div style="background:#fff;border:1px solid #eee;border-radius:4px;padding:${isSmall?4:8}px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;overflow:hidden;">
-          <img src="${item.img}" alt="${item.name}" style="width:100%;flex:1;object-fit:contain;border-radius:3px;" onerror="this.style.display='none'">
-          <div style="font-size:${isSmall?8:fontSize}px;font-weight:600;color:#333;line-height:1.3;flex-shrink:0;">${item.name}</div>
-        </div>
-      `).join('') : '<div style="color:#ccc;font-size:12px;padding:30px 0;text-align:center;">Products coming soon</div>'}
+  const rows = [];
+  for(let r = 0; r < items.length; r += 2){
+    rows.push(items.slice(r, r + 2));
+  }
+  return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;position:relative;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad}px ${pad}px ${pad/2}px;border-bottom:1px solid #ddd;flex-shrink:0;">
+      <div style="font-size:${headerSize}px;font-weight:700;color:#333;">CORE <span style="color:${color};">SPORTS</span>WEARS</div>
+      <div style="font-size:${catSize}px;color:#666;">${name}</div>
     </div>
-    <div style="position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:${isSmall?7:10}px;color:#999;">${pageNumStr}</div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:${isSmall?4:8}px;padding:${pad}px;overflow:hidden;">
+      ${rows.length ? rows.map(row => `
+        <div style="display:flex;gap:${isSmall?4:8}px;flex:1;">
+          ${row.map(item => `
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid #eee;border-radius:3px;padding:${isSmall?2:4}px;overflow:hidden;">
+              <img src="${item.img}" alt="${item.name}" style="width:100%;flex:1;object-fit:contain;" onerror="this.style.display='none'">
+              <div style="font-size:${ifnt}px;font-weight:600;color:#333;text-align:center;line-height:1.2;padding:2px 0 0;flex-shrink:0;">${item.name}</div>
+            </div>
+          `).join('')}
+          ${row.length < 2 ? '<div style="flex:1;"></div>' : ''}
+        </div>
+      `).join('') : '<div style="color:#ccc;font-size:12px;text-align:center;padding-top:40px;">Products coming soon</div>'}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad}px;border-top:1px solid #ddd;flex-shrink:0;">
+      <div style="font-size:${isSmall?6:8}px;color:#999;">coresportswears.com</div>
+      <div style="font-size:${isSmall?6:8}px;color:#fff;background:#333;padding:1px 5px;border-radius:2px;">${pageNum + 1}</div>
+    </div>
   </div>`;
 }
 
 function calcTotalPages(code){
   const products = PRODUCTS[code] || [];
-  const itemsPerPage = 2;
+  const itemsPerPage = 4;
   const contentPages = Math.ceil(products.length / itemsPerPage);
   return 1 + Math.max(contentPages, 1) + 1;
 }
