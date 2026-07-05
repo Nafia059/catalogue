@@ -1,5 +1,7 @@
 {
   "version": 2,
-  "installCommand": "npm install --no-workspaces",
-  "outputDirectory": "public"
+  "installCommand": "echo skipping install",
+  "buildCommand": "echo skipping build",
+  "outputDirectory": "public",
+  "framework": null
 }
