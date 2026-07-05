@@ -597,11 +597,19 @@ document.getElementById('downloadBtn').addEventListener('click', async function(
     off.style.cssText = 'position:fixed;left:-9999px;top:0;width:420px;height:560px;overflow:hidden;z-index:-1;';
     document.body.appendChild(off);
     for(let idx=0;idx<pages.length;idx++){
-      off.innerHTML = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${pages[idx].html}</div>`;
-      await new Promise(r=>setTimeout(r,150));
+      let html = pages[idx].html;
+      html = html.replace(/src="([^"]+)"/g, (match, url) => {
+        if (url.startsWith('http') && !url.includes(window.location.hostname)) {
+          return `src="/api/img-proxy?url=${encodeURIComponent(url)}"`;
+        }
+        return match;
+      });
+      off.innerHTML = `<div style="background:${pages[idx].bg};color:${pages[idx].color};width:420px;height:560px;display:flex;align-items:center;justify-content:center;font-family:Open Sans,sans-serif;">${html}</div>`;
+      await new Promise(r=>setTimeout(r,200));
       const imgs = off.querySelectorAll('img');
-      if(imgs.length) await Promise.all(Array.from(imgs).map(img=>new Promise(r=>{if(img.complete)r();else{img.onload=r;img.onerror=r}})));
-      const canvas = await html2canvas(off,{width:420,height:560,scale:2,useCORS:true,backgroundColor:null,logging:false});
+      if(imgs.length) await Promise.all(Array.from(imgs).map(img=>new Promise(r=>{if(img.complete&&img.naturalWidth>0)r();else{img.onload=r;img.onerror=r}})));
+      await new Promise(r=>setTimeout(r,100));
+      const canvas = await html2canvas(off,{width:420,height:560,scale:2,useCORS:true,allowTaint:true,backgroundColor:null,logging:false});
       if(idx>0) pdf.addPage([420,560],'portrait');
       pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,420,560);
     }
