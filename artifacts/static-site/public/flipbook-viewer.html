@@ -510,6 +510,7 @@ function initFlipbook(){
   pages.forEach((p,idx)=>{
     const div = document.createElement('div');
     div.className = 'page';
+    div.dataset.bg = p.bg;
     div.style.setProperty('background', p.bg, 'important');
     const inner = document.createElement('div');
     inner.className = 'page-inner';
@@ -530,8 +531,8 @@ function initFlipbook(){
     elevation: 50,
     when: {
       turned: function(e, page){
-        document.querySelectorAll('#flipbook .page').forEach((el, i) => {
-          if (pages[i]) el.style.setProperty('background', pages[i].bg, 'important');
+        document.querySelectorAll('#flipbook .page').forEach((el) => {
+          if (el.dataset.bg) el.style.setProperty('background', el.dataset.bg, 'important');
         });
       }
     }
