@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -73,7 +73,7 @@ body::before{
 .book-container{
   flex:1;
   display:flex;align-items:center;justify-content:center;
-  padding:72px 20px 44px;
+  padding:72px 20px calc(44px + env(safe-area-inset-bottom, 0px));
   background:radial-gradient(ellipse at center, #1e2024 0%, #0d0f10 100%);
   overflow:hidden;
 }
@@ -258,13 +258,13 @@ body::before{
   .flipbook-toolbar{height:44px;padding:0 6px;}
   .tb-btn{width:28px;height:28px;font-size:12px;}
   .toolbar-brand{font-size:11px;}
-  .book-container{padding:56px 4px 40px;}
+  .book-container{padding:56px 4px calc(40px + env(safe-area-inset-bottom, 0px));}
 }
 @media (max-width:480px){
   .toolbar-brand{display:none;}
   .tb-btn{width:24px;height:24px;font-size:10px;}
   .flipbook-toolbar{height:40px;padding:0 4px;}
-  .book-container{padding:48px 2px 56px;}
+  .book-container{padding:48px 2px calc(56px + env(safe-area-inset-bottom, 0px));}
 }
 </style>
 </head>
@@ -366,14 +366,14 @@ function getFlipDimensions() {
   const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
   const availW = vw - 40;
   if (availW <= 480) {
-    const w = Math.min(availW, 400);
+    const w = Math.min(availW, 380);
     const h = Math.round(w * 0.667);
-    const maxH = Math.min(h, vh - 110);
+    const maxH = Math.min(h, vh - 140);
     return { width: w, height: Math.max(maxH, 150), duration: 300 };
   } else if (availW <= 720) {
     const w = Math.min(availW, 560);
     const h = Math.round(w * 0.667);
-    const maxH = Math.min(h, vh - 110);
+    const maxH = Math.min(h, vh - 120);
     return { width: w, height: Math.max(maxH, 150), duration: 400 };
   } else if (availW <= 1050) {
     return { width: 680, height: 450, duration: 500 };
