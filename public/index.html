@@ -310,7 +310,7 @@ const CATEGORIES = [
     code: "CAT-05",
     name: "Headwear & Accessories",
     desc: "Caps, beanies, patches, sleeves, socks & custom trims.",
-    slug: "",
+    slug: "sports-accessories",
     color: "#d1a13d",
     pdfUrl: "#",
     totalPages: 4
@@ -377,19 +377,46 @@ async function fetchAllProducts() {
     "ski-snow-wear": "CAT-01",
     "outerwear": "CAT-01",
     "ski-snowboarding-pants": "CAT-01",
+    "ski-snowboarding-jackets": "CAT-01",
     "custom-ski-suits": "CAT-01",
     "hoodies": "CAT-01",
+    "gloves-mittens": "CAT-01",
     "ski-snowboard-accessories": "CAT-01",
     "ski-balaclava-neck-warmers": "CAT-01",
+    "fabrics-for-ski-snow-wear": "CAT-01",
     "custom-streetwear": "CAT-02",
     "custom-t-shirts": "CAT-02",
     "basic-t-shirts": "CAT-02",
     "oversized-streetwear-t-shirts": "CAT-02",
     "washed-dyed-t-shirts": "CAT-02",
     "graphic-printed-t-shirts": "CAT-02",
+    "streetwear-fabrics": "CAT-02",
     "custom-sportswear": "CAT-03",
+    "custom-sportswear-fabrics": "CAT-03",
     "custom-bags": "CAT-04",
+    "sports-accessories": "CAT-05",
+    "beanies-winter-headwear": "CAT-05",
   };
+
+  let categoriesMap = {};
+  try {
+    let catPage = 1;
+    while (true) {
+      const catData = await fetchFromWC('products/categories', { per_page: '100', page: String(catPage), hide_empty: 'false' });
+      if (!catData || !catData.length) break;
+      catData.forEach(c => { categoriesMap[c.id] = c; });
+      catPage++;
+    }
+  } catch (_) {}
+
+  function resolveCatCode(catId) {
+    let current = categoriesMap[catId];
+    while (current) {
+      if (slugToCode[current.slug]) return slugToCode[current.slug];
+      current = current.parent ? categoriesMap[current.parent] : null;
+    }
+    return null;
+  }
 
   const all = [];
   let page = 1;
@@ -406,8 +433,10 @@ async function fetchAllProducts() {
   all.forEach(p => {
     const matched = new Set();
     (p.categories || []).forEach(cat => {
-      const code = slugToCode[cat.slug];
-      if (code) matched.add(code);
+      const directCode = slugToCode[cat.slug];
+      if (directCode) { matched.add(directCode); return; }
+      const walked = resolveCatCode(cat.id);
+      if (walked) matched.add(walked);
     });
     if (matched.size) {
       const code = [...matched][0];
