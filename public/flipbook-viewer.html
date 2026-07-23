@@ -309,7 +309,7 @@ const CATEGORIES = [
   {code:"CAT-02",name:"Streetwear",desc:"Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",slug:"custom-streetwear",color:"#ff4b2b",totalPages:6},
   {code:"CAT-03",name:"Sportswear",desc:"Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",slug:"custom-sportswear",color:"#1f8a5b",totalPages:4},
   {code:"CAT-04",name:"Bags",desc:"Duffel bags, sports backpacks, fanny bags & tote bags.",slug:"custom-bags",color:"#8a5cf6",totalPages:4},
-  {code:"CAT-05",name:"Headwear & Accessories",desc:"Caps, beanies, patches, sleeves, socks & custom trims.",slug:"",color:"#d1a13d",totalPages:4},
+  {code:"CAT-05",name:"Headwear & Accessories",desc:"Caps, beanies, patches, sleeves, socks & custom trims.",slug:"sports-accessories",color:"#d1a13d",totalPages:4},
 ];
 
 const FALLBACK_PRODUCTS = {
@@ -391,11 +391,37 @@ async function fetchFromWC(endpoint, params = {}) {
 async function fetchAllProducts() {
   const slugToCode = {
     "ski-snow-wear":"CAT-01","outerwear":"CAT-01","ski-snowboarding-pants":"CAT-01",
-    "custom-ski-suits":"CAT-01","hoodies":"CAT-01","ski-snowboard-accessories":"CAT-01",
-    "ski-balaclava-neck-warmers":"CAT-01","custom-streetwear":"CAT-02","custom-t-shirts":"CAT-02",
-    "basic-t-shirts":"CAT-02","oversized-streetwear-t-shirts":"CAT-02","washed-dyed-t-shirts":"CAT-02",
-    "graphic-printed-t-shirts":"CAT-02","custom-sportswear":"CAT-03","custom-bags":"CAT-04",
+    "ski-snowboarding-jackets":"CAT-01","custom-ski-suits":"CAT-01","hoodies":"CAT-01",
+    "gloves-mittens":"CAT-01","ski-snowboard-accessories":"CAT-01",
+    "ski-balaclava-neck-warmers":"CAT-01","fabrics-for-ski-snow-wear":"CAT-01",
+    "custom-streetwear":"CAT-02","custom-t-shirts":"CAT-02","basic-t-shirts":"CAT-02",
+    "oversized-streetwear-t-shirts":"CAT-02","washed-dyed-t-shirts":"CAT-02",
+    "graphic-printed-t-shirts":"CAT-02","streetwear-fabrics":"CAT-02",
+    "custom-sportswear":"CAT-03","custom-sportswear-fabrics":"CAT-03",
+    "custom-bags":"CAT-04",
+    "sports-accessories":"CAT-05","beanies-winter-headwear":"CAT-05",
   };
+
+  let categoriesMap = {};
+  try {
+    let catPage = 1;
+    while (true) {
+      const catData = await fetchFromWC('products/categories', { per_page: '100', page: String(catPage), hide_empty: 'false' });
+      if (!catData || !catData.length) break;
+      catData.forEach(c => { categoriesMap[c.id] = c; });
+      catPage++;
+    }
+  } catch (_) {}
+
+  function resolveCatCode(catId) {
+    let current = categoriesMap[catId];
+    while (current) {
+      if (slugToCode[current.slug]) return slugToCode[current.slug];
+      current = current.parent ? categoriesMap[current.parent] : null;
+    }
+    return null;
+  }
+
   const all = [];
   let page = 1;
   while (true) {
@@ -408,8 +434,10 @@ async function fetchAllProducts() {
   all.forEach(p => {
     const matched = new Set();
     (p.categories || []).forEach(cat => {
-      const code = slugToCode[cat.slug];
-      if (code) matched.add(code);
+      const directCode = slugToCode[cat.slug];
+      if (directCode) { matched.add(directCode); return; }
+      const walked = resolveCatCode(cat.id);
+      if (walked) matched.add(walked);
     });
     if (matched.size) {
       const code = [...matched][0];
