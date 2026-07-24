@@ -514,7 +514,7 @@ function buildProductPage(catName, color, pageNum, totalPages, items, subcatName
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad}px;border-top:1px solid #ddd;flex-shrink:0;">
       <div style="font-size:${isSmall?6:8}px;color:#999;">coresportswears.com</div>
-      <div style="font-size:${isSmall?6:8}px;color:#fff;background:#333;padding:1px 5px;border-radius:2px;">${pageNum + 1}/${totalPages}</div>
+      <div style="font-size:${isSmall?6:8}px;color:#fff;background:#333;padding:1px 5px;border-radius:2px;">${pageNum}/${totalPages}</div>
     </div>
   </div>`;
 }
@@ -578,13 +578,16 @@ function getPages(c){
   pages.push({html:buildPageHTML(c.name,c.color,0,totalPages,products,dims.width,dims.height),bg:c.color,color:'#fff',subcat:null});
 
   let contentPage = 1;
+  let totalContentPages = 0;
+  groups.forEach(g => { totalContentPages += Math.ceil(g.products.length / itemsPerPage); });
+
   groups.forEach(g => {
     const gPages = Math.ceil(g.products.length / itemsPerPage);
     for (let i = 0; i < gPages; i++) {
       const startIdx = i * itemsPerPage;
       const items = g.products.slice(startIdx, startIdx + itemsPerPage);
       pages.push({
-        html: buildProductPage(c.name, c.color, contentPage, totalPages, items, g.name, dims.width, dims.height),
+        html: buildProductPage(c.name, c.color, contentPage, totalContentPages, items, g.name, dims.width, dims.height),
         bg: '#f7f5ef',
         color: '#333',
         subcat: g.name
