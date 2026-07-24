@@ -365,20 +365,27 @@ function getFlipDimensions() {
   const vw = window.innerWidth;
   const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
   const availW = vw - 40;
+  const availH = vh - 120;
   if (availW <= 480) {
     const w = Math.min(availW, 380);
     const h = Math.round(w * 0.667);
-    const maxH = Math.min(h, vh - 140);
+    const maxH = Math.min(h, availH);
     return { width: w, height: Math.max(maxH, 150), duration: 300 };
   } else if (availW <= 720) {
     const w = Math.min(availW, 560);
     const h = Math.round(w * 0.667);
-    const maxH = Math.min(h, vh - 120);
+    const maxH = Math.min(h, availH);
     return { width: w, height: Math.max(maxH, 150), duration: 400 };
-  } else if (availW <= 1050) {
-    return { width: 680, height: 450, duration: 500 };
+  } else if (availW <= 1200) {
+    const w = Math.min(availW, 900);
+    const h = Math.round(w * 0.667);
+    const maxH = Math.min(h, availH);
+    return { width: w, height: Math.max(maxH, 200), duration: 500 };
   }
-  return { width: 840, height: 560, duration: 600 };
+  const w = Math.min(availW, 1400);
+  const h = Math.round(w * 0.667);
+  const maxH = Math.min(h, availH);
+  return { width: w, height: Math.max(maxH, 300), duration: 600 };
 }
 
 async function fetchFromWC(endpoint, params = {}) {
