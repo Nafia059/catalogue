@@ -563,7 +563,7 @@ function calcTotalPages(code){
   const itemsPerPage = 4;
   let count = 0;
   groups.forEach(g => { count += Math.ceil(g.products.length / itemsPerPage); });
-  return 1 + Math.max(count, 1) + 1;
+  return 1 + count + 1;
 }
 
 function getPages(c){
@@ -592,17 +592,6 @@ function getPages(c){
       contentPage++;
     }
   });
-
-  // Pad empty content pages
-  while (contentPage > 1 && contentPage <= totalPages - 1) {
-    pages.push({
-      html: buildProductPage(c.name, c.color, contentPage, totalPages, [], '', dims.width, dims.height),
-      bg: '#f7f5ef',
-      color: '#333',
-      subcat: null
-    });
-    contentPage++;
-  }
 
   // Back cover
   pages.push({html:buildPageHTML(c.name,c.color,totalPages-1,totalPages,products,dims.width,dims.height),bg:'#222529',color:'#fff',subcat:null});
