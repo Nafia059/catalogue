@@ -488,7 +488,7 @@ const params = new URLSearchParams(window.location.search);
 const catIndex = parseInt(params.get('cat')) || 0;
 const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
-function buildContentPage(catName, color, pageNum, totalPages, items, pageW, pageH, isContinued) {
+function buildContentPage(catName, color, pageNum, totalPages, groups, pageW, pageH, isContinued) {
   const isSmall = pageW < 500;
   const pad = isSmall ? 6 : 12;
   const headerSize = isSmall ? 8 : 12;
@@ -496,13 +496,16 @@ function buildContentPage(catName, color, pageNum, totalPages, items, pageW, pag
   const ifnt = isSmall ? 6 : 8;
 
   let listingHtml = '';
-  items.forEach(item => {
-    const skuText = item.sku ? item.sku : '—';
-    listingHtml += `<div style="display:flex;align-items:center;gap:${isSmall ? 2 : 4}px;padding:${isSmall ? 1 : 2}px 0;border-bottom:1px dotted #e5e5e5;">
-      <div style="flex:1;font-size:${ifnt}px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
-      <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#999;min-width:${isSmall ? 30 : 45}px;text-align:right;flex-shrink:0;">${skuText}</div>
-      <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#666;min-width:${isSmall ? 16 : 20}px;text-align:right;flex-shrink:0;">${item.page}</div>
-    </div>`;
+  groups.forEach(g => {
+    listingHtml += `<div style="font-size:${Math.max(ifnt + 1, 7)}px;font-weight:700;color:${color};padding:${isSmall ? 3 : 5}px 0 ${isSmall ? 2 : 3}px;border-bottom:1px solid #ddd;margin-top:${isSmall ? 3 : 6}px;${g.isFirst ? '' : 'margin-top:0;'}">${g.name}</div>`;
+    g.items.forEach(item => {
+      const skuText = item.sku ? item.sku : '—';
+      listingHtml += `<div style="display:flex;align-items:center;gap:${isSmall ? 2 : 4}px;padding:${isSmall ? 1 : 2}px 0;border-bottom:1px dotted #e5e5e5;">
+        <div style="flex:1;font-size:${ifnt}px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
+        <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#999;min-width:${isSmall ? 30 : 45}px;text-align:right;flex-shrink:0;">${skuText}</div>
+        <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#666;min-width:${isSmall ? 16 : 20}px;text-align:right;flex-shrink:0;">${item.page}</div>
+      </div>`;
+    });
   });
 
   const title = isContinued ? 'Contents (continued)' : 'Contents';
@@ -612,9 +615,9 @@ function calcTotalPages(code){
   const itemsPerPage = 4;
   let productPages = 0;
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
-  const tocItems = products.length;
+  const tocLines = products.length + groups.length;
   const tocPerPage = 18;
-  const tocPages = tocItems > 0 ? Math.ceil(tocItems / tocPerPage) : 0;
+  const tocPages = tocLines > 0 ? Math.ceil(tocLines / tocPerPage) : 0;
   return 1 + tocPages + Math.max(productPages, 1) + 1;
 }
 
@@ -626,38 +629,49 @@ function getPages(c){
   const itemsPerPage = 4;
   const tocPerPage = 18;
 
-  // --- Step 1: build product-to-page map ---
-  const productPageMap = {};
-  let pNum = 1;
+  // --- Step 1: compute product page numbers ---
+  let productPage = 1;
+  const subcatStartPage = {};
   groups.forEach(g => {
-    for (let i = 0; i < g.products.length; i++) {
-      productPageMap[g.products[i].name] = pNum + Math.floor(i / itemsPerPage);
-    }
+    subcatStartPage[g.name] = productPage;
+    productPage += Math.ceil(g.products.length / itemsPerPage);
   });
 
-  // --- Step 2: count pages ---
-  let productPages = 0;
-  groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
-  productPages = Math.max(productPages, 1);
-  const tocPages = products.length > 0 ? Math.ceil(products.length / tocPerPage) : 0;
-  const totalPages = 1 + tocPages + productPages + 1;
-
-  // --- Step 3: build flat product list for TOC with page numbers ---
-  const tocItems = [];
+  // --- Step 2: build TOC lines (header + items per subcat) ---
+  const tocLines = [];
   groups.forEach(g => {
-    g.products.forEach(p => {
-      tocItems.push({ name: p.name, sku: p.sku || '', page: productPageMap[p.name] || 1 });
+    tocLines.push({ type: 'header', name: g.name });
+    g.products.forEach((p, idx) => {
+      const page = subcatStartPage[g.name] + Math.floor(idx / itemsPerPage);
+      tocLines.push({ type: 'item', name: p.name, sku: p.sku || '', page: page });
     });
   });
 
-  // --- Page 0: Cover ---
+  // --- Step 3: count pages ---
+  let productPages = 0;
+  groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
+  productPages = Math.max(productPages, 1);
+  const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
+  const totalPages = 1 + tocPages + productPages + 1;
+
+  // --- Cover ---
   pages.push({html:buildPageHTML(c.name,c.color,0,totalPages,products,dims.width,dims.height),bg:c.color,color:'#fff',subcat:null});
 
-  // --- Pages 1..tocPages: Contents pages ---
+  // --- Contents pages (paginated with subcategory grouping) ---
   for (let i = 0; i < tocPages; i++) {
-    const slice = tocItems.slice(i * tocPerPage, (i + 1) * tocPerPage);
+    const slice = tocLines.slice(i * tocPerPage, (i + 1) * tocPerPage);
+    const groupsForPage = [];
+    let currentGroup = null;
+    slice.forEach(line => {
+      if (line.type === 'header') {
+        currentGroup = { name: line.name, items: [], isFirst: groupsForPage.length === 0 };
+        groupsForPage.push(currentGroup);
+      } else if (currentGroup) {
+        currentGroup.items.push(line);
+      }
+    });
     pages.push({
-      html: buildContentPage(c.name, c.color, i + 1, totalPages, slice, dims.width, dims.height, i > 0),
+      html: buildContentPage(c.name, c.color, i + 1, totalPages, groupsForPage, dims.width, dims.height, i > 0),
       bg: '#fff', color: '#333', subcat: null
     });
   }

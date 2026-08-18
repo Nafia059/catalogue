@@ -542,7 +542,7 @@ function getPages(c){
   const itemsPerPage = 4;
   const tocPerPage = 18;
 
-  // Step 1: build product-to-page map
+  // Step 1: build flat product list with page numbers
   const tocItems = [];
   (products || []).forEach((p, idx) => {
     tocItems.push({ name: p.name, sku: p.sku || '', page: Math.floor(idx / itemsPerPage) + 1 });
@@ -559,8 +559,9 @@ function getPages(c){
   // Contents pages
   for (let i = 0; i < tocPages; i++) {
     const slice = tocItems.slice(i * tocPerPage, (i + 1) * tocPerPage);
+    const groupsForPage = [{ name: '', items: slice, isFirst: true }];
     pages.push({
-      html: buildContentPage(c.name, c.color, i + 1, totalPages, slice, dims.width, dims.height, i > 0),
+      html: buildContentPage(c.name, c.color, i + 1, totalPages, groupsForPage, dims.width, dims.height, i > 0),
       bg: '#fff', color: '#333'
     });
   }
