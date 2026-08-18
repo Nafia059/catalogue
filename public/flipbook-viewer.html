@@ -632,7 +632,7 @@ function calcTotalPages(code){
   }
   if (tocGroups.length === 0) tocPages = 0;
 
-  return 1 + tocPages + productPages + 1;
+  return tocPages + productPages;
 }
 
 function getPages(c){
@@ -667,7 +667,7 @@ function getPages(c){
   productPages = Math.max(productPages, 1);
   const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
   const pageOffset = tocPages; // contents pages before first product (cover is page 0, not numbered)
-  const totalPages = 1 + tocPages + productPages + 1;
+  const totalPages = tocPages + productPages; // content pages only (cover and back excluded)
 
   // --- Step 4: fix TOC page numbers to absolute ---
   tocLines.forEach(line => { if (line.type === 'item') line.page += pageOffset; });
