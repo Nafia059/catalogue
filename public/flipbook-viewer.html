@@ -643,7 +643,7 @@ function getPages(c){
   const itemsPerPage = 4;
   const tocPerPage = 18;
 
-  // --- Step 1: compute product page numbers ---
+  // --- Step 1: compute product page numbers (relative, starting at 1) ---
   let productPage = 1;
   const subcatStartPage = {};
   groups.forEach(g => {
@@ -666,7 +666,11 @@ function getPages(c){
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
   productPages = Math.max(productPages, 1);
   const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
+  const pageOffset = 1 + tocPages; // cover + contents pages before first product
   const totalPages = 1 + tocPages + productPages + 1;
+
+  // --- Step 4: fix TOC page numbers to absolute ---
+  tocLines.forEach(line => { if (line.type === 'item') line.page += pageOffset; });
 
   // --- Cover ---
   pages.push({html:buildPageHTML(c.name,c.color,0,totalPages,products,dims.width,dims.height),bg:c.color,color:'#fff',subcat:null});
