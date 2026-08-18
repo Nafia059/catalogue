@@ -615,10 +615,24 @@ function calcTotalPages(code){
   const itemsPerPage = 4;
   let productPages = 0;
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
-  const tocLines = products.length + groups.length;
-  const tocPerPage = 18;
-  const tocPages = tocLines > 0 ? Math.ceil(tocLines / tocPerPage) : 0;
-  return 1 + tocPages + Math.max(productPages, 1) + 1;
+  productPages = Math.max(productPages, 1);
+
+  // Count TOC pages using atomic subcategory units
+  const tocGroups = groups.map(g => ({ count: g.products.length }));
+  let tocPages = 0;
+  let gIdx = 0;
+  while (gIdx < tocGroups.length) {
+    tocPages++;
+    let linesUsed = 1 + tocGroups[gIdx].count;
+    gIdx++;
+    while (gIdx < tocGroups.length && linesUsed + 1 + tocGroups[gIdx].count <= 18) {
+      linesUsed += 1 + tocGroups[gIdx].count;
+      gIdx++;
+    }
+  }
+  if (tocGroups.length === 0) tocPages = 0;
+
+  return 1 + tocPages + productPages + 1;
 }
 
 function getPages(c){
@@ -657,23 +671,47 @@ function getPages(c){
   // --- Cover ---
   pages.push({html:buildPageHTML(c.name,c.color,0,totalPages,products,dims.width,dims.height),bg:c.color,color:'#fff',subcat:null});
 
-  // --- Contents pages (paginated with subcategory grouping) ---
-  for (let i = 0; i < tocPages; i++) {
-    const slice = tocLines.slice(i * tocPerPage, (i + 1) * tocPerPage);
+  // --- Contents pages (subcategories as atomic units) ---
+  const tocGroups = [];
+  let cur = null;
+  tocLines.forEach(line => {
+    if (line.type === 'header') {
+      cur = { name: line.name, items: [] };
+      tocGroups.push(cur);
+    } else if (cur) {
+      cur.items.push(line);
+    }
+  });
+
+  let tocPageNum = 1;
+  let gIdx = 0;
+  while (gIdx < tocGroups.length) {
     const groupsForPage = [];
-    let currentGroup = null;
-    slice.forEach(line => {
-      if (line.type === 'header') {
-        currentGroup = { name: line.name, items: [], isFirst: groupsForPage.length === 0 };
-        groupsForPage.push(currentGroup);
-      } else if (currentGroup) {
-        currentGroup.items.push(line);
+    let linesUsed = 1;
+    groupsForPage.push({ name: tocGroups[gIdx].name, items: [], isFirst: true });
+    tocGroups[gIdx].items.forEach(item => {
+      if (linesUsed < tocPerPage) {
+        groupsForPage[groupsForPage.length - 1].items.push(item);
+        linesUsed++;
       }
     });
+    gIdx++;
+    while (gIdx < tocGroups.length && linesUsed + 1 + tocGroups[gIdx].items.length <= tocPerPage) {
+      const sub = { name: tocGroups[gIdx].name, items: [], isFirst: false };
+      tocGroups[gIdx].items.forEach(item => {
+        if (linesUsed < tocPerPage) {
+          sub.items.push(item);
+          linesUsed++;
+        }
+      });
+      groupsForPage.push(sub);
+      gIdx++;
+    }
     pages.push({
-      html: buildContentPage(c.name, c.color, i + 1, totalPages, groupsForPage, dims.width, dims.height, i > 0),
+      html: buildContentPage(c.name, c.color, tocPageNum, totalPages, groupsForPage, dims.width, dims.height, tocPageNum > 1),
       bg: '#fff', color: '#333', subcat: null
     });
+    tocPageNum++;
   }
 
   // --- Product pages ---
