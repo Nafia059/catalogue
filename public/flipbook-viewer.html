@@ -666,7 +666,7 @@ function getPages(c){
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
   productPages = Math.max(productPages, 1);
   const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
-  const pageOffset = 1 + tocPages; // cover + contents pages before first product
+  const pageOffset = tocPages; // contents pages before first product (cover is page 0, not numbered)
   const totalPages = 1 + tocPages + productPages + 1;
 
   // --- Step 4: fix TOC page numbers to absolute ---
