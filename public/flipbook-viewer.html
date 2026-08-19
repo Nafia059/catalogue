@@ -718,8 +718,9 @@ function getPages(c){
       linesForPage.push(tocLines[lineIdx]);
       lineIdx++;
     }
+    const absPageNum = imagePageCount + tocPageNum;
     pages.push({
-      html: buildContentPage(c.name, c.color, tocPageNum, totalPages, linesForPage, dims.width, dims.height, tocPageNum > 1),
+      html: buildContentPage(c.name, c.color, absPageNum, totalPages, linesForPage, dims.width, dims.height, tocPageNum > 1),
       bg: '#fff', color: '#333', subcat: null
     });
     tocPageNum++;
@@ -732,8 +733,9 @@ function getPages(c){
     for (let i = 0; i < gPages; i++) {
       const startIdx = i * itemsPerPage;
       const items = g.products.slice(startIdx, startIdx + itemsPerPage);
+      const absPageNum = imagePageCount + tocPages + contentPage;
       pages.push({
-        html: buildProductPage(c.name, c.color, tocPages + contentPage, totalPages, items, g.name, dims.width, dims.height),
+        html: buildProductPage(c.name, c.color, absPageNum, totalPages, items, g.name, dims.width, dims.height),
         bg: '#f7f5ef',
         color: '#333',
         subcat: g.name
