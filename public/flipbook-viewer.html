@@ -361,7 +361,7 @@ const FALLBACK_PRODUCTS = {
 let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
 let currentZoom = 1;
 
-// Full-page image pages per category (cover is unique, rest are shared)
+// Full-page image pages per category (all unique per category)
 const CATEGORY_IMAGES = {
   "CAT-01": [
     { img: '/ski-snow-wear-cover.png', bg: '#1a1a2e', isCover: true },
@@ -371,27 +371,27 @@ const CATEGORY_IMAGES = {
   ],
   "CAT-02": [
     { img: '/streetwear-cover.png', bg: '#1a1a2e', isCover: true },
-    { img: '/ski-snow-wear-about.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-how-to-work.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-faqs.png', bg: '#ffffff', isCover: false }
+    { img: '/streetwear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/streetwear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/streetwear-faqs.png', bg: '#ffffff', isCover: false }
   ],
   "CAT-03": [
     { img: '/sportswear-cover.png', bg: '#1a1a2e', isCover: true },
-    { img: '/ski-snow-wear-about.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-how-to-work.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-faqs.png', bg: '#ffffff', isCover: false }
+    { img: '/sportswear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/sportswear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/sportswear-faqs.png', bg: '#ffffff', isCover: false }
   ],
   "CAT-04": [
     { img: '/bags-cover.png', bg: '#1a1a2e', isCover: true },
-    { img: '/ski-snow-wear-about.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-how-to-work.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-faqs.png', bg: '#ffffff', isCover: false }
+    { img: '/bags-about.png', bg: '#ffffff', isCover: false },
+    { img: '/bags-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/bags-faqs.png', bg: '#ffffff', isCover: false }
   ],
   "CAT-05": [
     { img: '/headwear-cover.png', bg: '#1a1a2e', isCover: true },
-    { img: '/ski-snow-wear-about.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-how-to-work.png', bg: '#ffffff', isCover: false },
-    { img: '/ski-snow-wear-faqs.png', bg: '#ffffff', isCover: false }
+    { img: '/headwear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/headwear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/headwear-faqs.png', bg: '#ffffff', isCover: false }
   ]
 };
 
