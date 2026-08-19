@@ -547,10 +547,10 @@ function buildContentPage(catName, color, pageNum, totalPages, lines, pageW, pag
 
   return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;width:100%;background:linear-gradient(135deg, #0d3d38 0%, #1a5c54 50%, #0d3d38 100%);position:relative;overflow:hidden;">
     <div style="flex:1;display:flex;flex-direction:column;padding:${pad * 2}px ${pad * 2}px ${pad}px;justify-content:center;">
-      <div style="text-align:center;margin-bottom:${isSmall ? 12 : 24px};">
+      <div style="text-align:center;margin-bottom:${isSmall ? 12 : 24}px;">
         <h2 style="font-size:${titleSize}px;font-weight:700;color:#fff;margin:0;letter-spacing:1px;">Contents</h2>
       </div>
-      <div style="display:flex;gap:${isSmall ? 8 : 20px};flex:1;min-height:0;">
+      <div style="display:flex;gap:${isSmall ? 8 : 20}px;flex:1;min-height:0;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;">
           ${buildColumn(leftCol)}
         </div>
