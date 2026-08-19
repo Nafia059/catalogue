@@ -361,6 +361,40 @@ const FALLBACK_PRODUCTS = {
 let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
 let currentZoom = 1;
 
+// Full-page image pages per category (cover, about, how-to-work, FAQs)
+const CATEGORY_IMAGES = {
+  "CAT-01": [
+    { img: '/ski-snow-wear-cover.png', bg: '#1a1a2e', isCover: true },
+    { img: '/ski-snow-wear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/ski-snow-wear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/ski-snow-wear-faqs.png', bg: '#ffffff', isCover: false }
+  ],
+  "CAT-02": [
+    { img: '/streetwear-cover.png', bg: '#1a1a2e', isCover: true },
+    { img: '/streetwear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/streetwear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/streetwear-faqs.png', bg: '#ffffff', isCover: false }
+  ],
+  "CAT-03": [
+    { img: '/sportswear-cover.png', bg: '#1a1a2e', isCover: true },
+    { img: '/sportswear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/sportswear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/sportswear-faqs.png', bg: '#ffffff', isCover: false }
+  ],
+  "CAT-04": [
+    { img: '/bags-cover.png', bg: '#1a1a2e', isCover: true },
+    { img: '/bags-about.png', bg: '#ffffff', isCover: false },
+    { img: '/bags-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/bags-faqs.png', bg: '#ffffff', isCover: false }
+  ],
+  "CAT-05": [
+    { img: '/headwear-cover.png', bg: '#1a1a2e', isCover: true },
+    { img: '/headwear-about.png', bg: '#ffffff', isCover: false },
+    { img: '/headwear-how-to-work.png', bg: '#ffffff', isCover: false },
+    { img: '/headwear-faqs.png', bg: '#ffffff', isCover: false }
+  ]
+};
+
 function getFlipDimensions() {
   const vw = window.innerWidth;
   const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
@@ -596,6 +630,12 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
   return '';
 }
 
+function buildImagePage(imgSrc, bgColor, pageW, pageH) {
+  return `<div class="page-inner" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:0;margin:0;background:${bgColor};">
+    <img src="${imgSrc}" alt="Catalogue Page" style="width:100%;height:100%;object-fit:contain;display:block;">
+  </div>`;
+}
+
 function groupBySubcat(products) {
   const groups = [];
   const order = [];
@@ -666,14 +706,24 @@ function getPages(c){
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
   productPages = Math.max(productPages, 1);
   const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
-  const pageOffset = tocPages; // contents pages before first product (cover is page 0, not numbered)
-  const totalPages = tocPages + productPages; // content pages only (cover and back excluded)
+  const categoryImages = CATEGORY_IMAGES[c.code] || CATEGORY_IMAGES["CAT-01"];
+  const imagePageCount = categoryImages.length;
+  const pageOffset = tocPages + imagePageCount; // contents pages + image pages before first product
+  const totalPages = tocPages + productPages + imagePageCount; // all pages (image + content)
 
   // --- Step 4: fix TOC page numbers to absolute ---
   tocLines.forEach(line => { if (line.type === 'item') line.page += pageOffset; });
 
-  // --- Cover ---
-  pages.push({html:buildPageHTML(c.name,c.color,0,totalPages,products,dims.width,dims.height),bg:c.color,color:'#fff',subcat:null});
+  // --- Full-page image pages (Cover, About, How to Work, FAQs) ---
+  categoryImages.forEach(imgPage => {
+    pages.push({
+      html: buildImagePage(imgPage.img, imgPage.bg, dims.width, dims.height),
+      bg: imgPage.bg,
+      color: '#fff',
+      subcat: null,
+      isImagePage: true
+    });
+  });
 
   // --- Contents pages (subcategories as atomic units) ---
   const tocGroups = [];
@@ -891,6 +941,7 @@ thumbOverlay.addEventListener('click',e=>{if(e.target===thumbOverlay)thumbOverla
 function renderThumbnails(){
   thumbGrid.innerHTML = '';
   const pages = getPages(cat);
+  const imageLabels = ['Cover', 'About', 'How to Work', 'FAQs'];
   pages.forEach((p,idx)=>{
     const item = document.createElement('div');
     item.className = 'thumb-item';
@@ -904,11 +955,17 @@ function renderThumbnails(){
     if(img){
       const clone = img.cloneNode();
       item.appendChild(clone);
+    }else if(p.isImagePage){
+      // Image page - use the image as thumbnail
+      const bg = document.createElement('div');
+      bg.style.cssText = `width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;padding:8px;text-align:center;color:${p.color};`;
+      bg.textContent = imageLabels[idx] || `Page ${idx+1}`;
+      item.appendChild(bg);
     }else{
       // Cover/back - use placeholder
       const bg = document.createElement('div');
       bg.style.cssText = `width:100%;height:100%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;padding:8px;text-align:center;color:${p.color};`;
-      bg.textContent = idx===0 ? cat.name : (idx===pages.length-1 ? 'Contact' : (pages[idx].html.match(/Page (\d+)/)?.[1]||''  ));
+      bg.textContent = idx===pages.length-1 ? 'Contact' : (pages[idx].html.match(/Page (\d+)/)?.[1]||''  );
       item.appendChild(bg);
     }
     item.appendChild(num);
