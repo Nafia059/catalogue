@@ -522,24 +522,19 @@ const params = new URLSearchParams(window.location.search);
 const catIndex = parseInt(params.get('cat')) || 0;
 const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
-function buildContentPage(catName, color, pageNum, totalPages, groups, pageW, pageH, isContinued) {
+function buildContentPage(catName, color, pageNum, totalPages, lines, pageW, pageH, isContinued) {
   const isSmall = pageW < 500;
   const pad = isSmall ? 6 : 12;
   const headerSize = isSmall ? 8 : 12;
   const catSize = isSmall ? 7 : 10;
-  const ifnt = isSmall ? 6 : 8;
+  const subcatSize = isSmall ? 9 : 14;
 
   let listingHtml = '';
-  groups.forEach(g => {
-    listingHtml += `<div style="font-size:${Math.max(ifnt + 1, 7)}px;font-weight:700;color:${color};padding:${isSmall ? 3 : 5}px 0 ${isSmall ? 2 : 3}px;border-bottom:1px solid #ddd;margin-top:${isSmall ? 3 : 6}px;${g.isFirst ? '' : 'margin-top:0;'}">${g.name}</div>`;
-    g.items.forEach(item => {
-      const skuText = item.sku ? item.sku : '—';
-      listingHtml += `<div style="display:flex;align-items:center;gap:${isSmall ? 2 : 4}px;padding:${isSmall ? 1 : 2}px 0;border-bottom:1px dotted #e5e5e5;">
-        <div style="flex:1;font-size:${ifnt}px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.name}</div>
-        <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#999;min-width:${isSmall ? 30 : 45}px;text-align:right;flex-shrink:0;">${skuText}</div>
-        <div style="font-size:${Math.max(ifnt - 1, 5)}px;color:#666;min-width:${isSmall ? 16 : 20}px;text-align:right;flex-shrink:0;">${item.page}</div>
-      </div>`;
-    });
+  lines.forEach(line => {
+    listingHtml += `<div style="display:flex;align-items:center;justify-content:space-between;padding:${isSmall ? 6 : 12}px 0;border-bottom:1px solid #e0e0e0;">
+      <div style="font-size:${subcatSize}px;font-weight:600;color:#333;">${line.name}</div>
+      <div style="font-size:${isSmall ? 8 : 12}px;color:${color};font-weight:600;">Page ${line.page}</div>
+    </div>`;
   });
 
   const title = isContinued ? 'Contents (continued)' : 'Contents';
@@ -551,12 +546,7 @@ function buildContentPage(catName, color, pageNum, totalPages, groups, pageW, pa
     </div>
     <div style="padding:${isSmall ? 4 : 8}px ${pad}px;background:${color};color:#fff;font-size:${isSmall ? 8 : 11}px;font-weight:600;letter-spacing:0.5px;flex-shrink:0;">${title}</div>
     <div style="flex:1;display:flex;flex-direction:column;padding:${pad}px ${pad}px ${pad/2}px;overflow:hidden;min-height:0;">
-      <div style="display:flex;gap:${isSmall ? 2 : 4}px;padding-bottom:${isSmall ? 2 : 3}px;border-bottom:1px solid #ccc;margin-bottom:${isSmall ? 1 : 2}px;flex-shrink:0;">
-        <div style="flex:1;font-size:${Math.max(ifnt - 1, 5)}px;font-weight:700;color:#999;text-transform:uppercase;">Product</div>
-        <div style="font-size:${Math.max(ifnt - 1, 5)}px;font-weight:700;color:#999;text-transform:uppercase;min-width:${isSmall ? 30 : 45}px;text-align:right;flex-shrink:0;">SKU</div>
-        <div style="font-size:${Math.max(ifnt - 1, 5)}px;font-weight:700;color:#999;text-transform:uppercase;min-width:${isSmall ? 16 : 20}px;text-align:right;flex-shrink:0;">Page</div>
-      </div>
-      <div style="flex:1;overflow:hidden;">${listingHtml}</div>
+      ${listingHtml}
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad}px;border-top:1px solid #ddd;flex-shrink:0;">
       <div style="font-size:${isSmall?6:8}px;color:#999;">coresportswears.com</div>
@@ -691,14 +681,11 @@ function getPages(c){
     productPage += Math.ceil(g.products.length / itemsPerPage);
   });
 
-  // --- Step 2: build TOC lines (header + items per subcat) ---
+  // --- Step 2: build TOC lines (subcategories only) ---
   const tocLines = [];
   groups.forEach(g => {
-    tocLines.push({ type: 'header', name: g.name });
-    g.products.forEach((p, idx) => {
-      const page = subcatStartPage[g.name] + Math.floor(idx / itemsPerPage);
-      tocLines.push({ type: 'item', name: p.name, sku: p.sku || '', page: page });
-    });
+    const startPage = subcatStartPage[g.name] + imagePageCount;
+    tocLines.push({ type: 'subcat', name: g.name, page: startPage });
   });
 
   // --- Step 3: count pages ---
@@ -711,9 +698,6 @@ function getPages(c){
   const pageOffset = tocPages + imagePageCount; // contents pages + image pages before first product
   const totalPages = tocPages + productPages + imagePageCount; // all pages (image + content)
 
-  // --- Step 4: fix TOC page numbers to absolute ---
-  tocLines.forEach(line => { if (line.type === 'item') line.page += pageOffset; });
-
   // --- Full-page image pages (Cover, About, How to Work, FAQs) ---
   categoryImages.forEach(imgPage => {
     pages.push({
@@ -725,44 +709,17 @@ function getPages(c){
     });
   });
 
-  // --- Contents pages (subcategories as atomic units) ---
-  const tocGroups = [];
-  let cur = null;
-  tocLines.forEach(line => {
-    if (line.type === 'header') {
-      cur = { name: line.name, items: [] };
-      tocGroups.push(cur);
-    } else if (cur) {
-      cur.items.push(line);
-    }
-  });
-
+  // --- Contents pages (subcategories only) ---
   let tocPageNum = 1;
-  let gIdx = 0;
-  while (gIdx < tocGroups.length) {
-    const groupsForPage = [];
-    let linesUsed = 1;
-    groupsForPage.push({ name: tocGroups[gIdx].name, items: [], isFirst: true });
-    tocGroups[gIdx].items.forEach(item => {
-      if (linesUsed < tocPerPage) {
-        groupsForPage[groupsForPage.length - 1].items.push(item);
-        linesUsed++;
-      }
-    });
-    gIdx++;
-    while (gIdx < tocGroups.length && linesUsed + 1 + tocGroups[gIdx].items.length <= tocPerPage) {
-      const sub = { name: tocGroups[gIdx].name, items: [], isFirst: false };
-      tocGroups[gIdx].items.forEach(item => {
-        if (linesUsed < tocPerPage) {
-          sub.items.push(item);
-          linesUsed++;
-        }
-      });
-      groupsForPage.push(sub);
-      gIdx++;
+  let lineIdx = 0;
+  while (lineIdx < tocLines.length) {
+    const linesForPage = [];
+    while (lineIdx < tocLines.length && linesForPage.length < tocPerPage) {
+      linesForPage.push(tocLines[lineIdx]);
+      lineIdx++;
     }
     pages.push({
-      html: buildContentPage(c.name, c.color, tocPageNum, totalPages, groupsForPage, dims.width, dims.height, tocPageNum > 1),
+      html: buildContentPage(c.name, c.color, tocPageNum, totalPages, linesForPage, dims.width, dims.height, tocPageNum > 1),
       bg: '#fff', color: '#333', subcat: null
     });
     tocPageNum++;
