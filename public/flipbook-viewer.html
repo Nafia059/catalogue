@@ -631,8 +631,8 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
 }
 
 function buildImagePage(imgSrc, bgColor, pageW, pageH) {
-  return `<div class="page-inner" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:0;margin:0;background:${bgColor};">
-    <img src="${imgSrc}" alt="Catalogue Page" style="width:100%;height:100%;object-fit:contain;display:block;">
+  return `<div class="page-inner" style="display:flex;align-items:stretch;justify-content:stretch;height:100%;width:100%;padding:0;margin:0;background:${bgColor};overflow:hidden;">
+    <img src="${imgSrc}" alt="Catalogue Page" style="width:100%;height:100%;object-fit:fill;display:block;border:none;margin:0;padding:0;">
   </div>`;
 }
 
