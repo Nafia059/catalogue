@@ -524,33 +524,44 @@ const cat = CATEGORIES[Math.min(catIndex, CATEGORIES.length - 1)];
 
 function buildContentPage(catName, color, pageNum, totalPages, lines, pageW, pageH, isContinued) {
   const isSmall = pageW < 500;
-  const pad = isSmall ? 6 : 12;
-  const headerSize = isSmall ? 8 : 12;
-  const catSize = isSmall ? 7 : 10;
-  const subcatSize = isSmall ? 9 : 14;
-
-  let listingHtml = '';
-  lines.forEach(line => {
-    listingHtml += `<div style="display:flex;align-items:center;justify-content:space-between;padding:${isSmall ? 6 : 12}px 0;border-bottom:1px solid #e0e0e0;">
-      <div style="font-size:${subcatSize}px;font-weight:600;color:#333;">${line.name}</div>
-      <div style="font-size:${isSmall ? 8 : 12}px;color:${color};font-weight:600;">Page ${line.page}</div>
-    </div>`;
-  });
+  const pad = isSmall ? 6 : 14;
+  const titleSize = isSmall ? 14 : 22;
+  const subcatSize = isSmall ? 7 : 10;
 
   const title = isContinued ? 'Contents (continued)' : 'Contents';
 
-  return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;position:relative;">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad}px ${pad}px ${pad/2}px;border-bottom:1px solid #ddd;flex-shrink:0;">
-      <div style="font-size:${headerSize}px;font-weight:700;color:#333;">CORE <span style="color:${color};">SPORTS</span>WEARS</div>
-      <div style="font-size:${catSize}px;color:#666;">${catName}</div>
+  // Split lines into two columns
+  const mid = Math.ceil(lines.length / 2);
+  const leftCol = lines.slice(0, mid);
+  const rightCol = lines.slice(mid);
+
+  function buildColumn(items) {
+    return items.map(line => `
+      <div style="display:flex;align-items:center;padding:${isSmall ? 5 : 8}px 0;">
+        <div style="font-size:${subcatSize}px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">${line.name}</div>
+        <div style="flex:1;border-bottom:1px dotted rgba(255,255,255,0.3);margin:0 ${isSmall ? 4 : 8}px;min-width:20px;"></div>
+        <div style="font-size:${subcatSize}px;font-weight:600;color:#fff;">${line.page}</div>
+      </div>
+    `).join('');
+  }
+
+  return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;width:100%;background:linear-gradient(135deg, #0d3d38 0%, #1a5c54 50%, #0d3d38 100%);position:relative;overflow:hidden;">
+    <div style="flex:1;display:flex;flex-direction:column;padding:${pad * 2}px ${pad * 2}px ${pad}px;justify-content:center;">
+      <div style="text-align:center;margin-bottom:${isSmall ? 12 : 24px};">
+        <h2 style="font-size:${titleSize}px;font-weight:700;color:#fff;margin:0;letter-spacing:1px;">Contents</h2>
+      </div>
+      <div style="display:flex;gap:${isSmall ? 8 : 20px};flex:1;min-height:0;">
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;">
+          ${buildColumn(leftCol)}
+        </div>
+        ${rightCol.length ? `<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;">
+          ${buildColumn(rightCol)}
+        </div>` : ''}
+      </div>
     </div>
-    <div style="padding:${isSmall ? 4 : 8}px ${pad}px;background:${color};color:#fff;font-size:${isSmall ? 8 : 11}px;font-weight:600;letter-spacing:0.5px;flex-shrink:0;">${title}</div>
-    <div style="flex:1;display:flex;flex-direction:column;padding:${pad}px ${pad}px ${pad/2}px;overflow:hidden;min-height:0;">
-      ${listingHtml}
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad}px;border-top:1px solid #ddd;flex-shrink:0;">
-      <div style="font-size:${isSmall?6:8}px;color:#999;">coresportswears.com</div>
-      <div style="font-size:${isSmall?6:8}px;color:#fff;background:#333;padding:1px 5px;border-radius:2px;">${pageNum}/${totalPages}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad * 2}px;border-top:1px solid rgba(255,255,255,0.15);flex-shrink:0;">
+      <div style="font-size:${isSmall?5:7}px;color:rgba(255,255,255,0.5);">CORE SPORTSWEARS</div>
+      <div style="font-size:${isSmall?5:7}px;color:rgba(255,255,255,0.5);">${pageNum}/${totalPages}</div>
     </div>
   </div>`;
 }
