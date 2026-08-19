@@ -538,17 +538,17 @@ function buildContentPage(catName, color, pageNum, totalPages, lines, pageW, pag
   function buildColumn(items) {
     return items.map(line => `
       <div style="display:flex;align-items:center;padding:${isSmall ? 5 : 8}px 0;">
-        <div style="font-size:${subcatSize}px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.5px;">${line.name}</div>
-        <div style="flex:1;border-bottom:1px dotted rgba(255,255,255,0.3);margin:0 ${isSmall ? 4 : 8}px;min-width:20px;"></div>
-        <div style="font-size:${subcatSize}px;font-weight:600;color:#fff;">${line.page}</div>
+        <div style="font-size:${subcatSize}px;font-weight:700;color:#222;text-transform:uppercase;letter-spacing:0.5px;">${line.name}</div>
+        <div style="flex:1;border-bottom:1px dotted #999;margin:0 ${isSmall ? 4 : 8}px;min-width:20px;"></div>
+        <div style="font-size:${subcatSize}px;font-weight:600;color:#222;">${line.page}</div>
       </div>
     `).join('');
   }
 
-  return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;width:100%;background:linear-gradient(135deg, #0d3d38 0%, #1a5c54 50%, #0d3d38 100%);position:relative;overflow:hidden;">
+  return `<div class="page-inner" style="display:flex;flex-direction:column;height:100%;width:100%;background:#f5f5f5;position:relative;overflow:hidden;">
     <div style="flex:1;display:flex;flex-direction:column;padding:${pad * 2}px ${pad * 2}px ${pad}px;justify-content:center;">
       <div style="text-align:center;margin-bottom:${isSmall ? 12 : 24}px;">
-        <h2 style="font-size:${titleSize}px;font-weight:700;color:#fff;margin:0;letter-spacing:1px;">Contents</h2>
+        <h2 style="font-size:${titleSize}px;font-weight:700;color:#222;margin:0;letter-spacing:1px;">Contents</h2>
       </div>
       <div style="display:flex;gap:${isSmall ? 8 : 20}px;flex:1;min-height:0;">
         <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;">
@@ -559,9 +559,9 @@ function buildContentPage(catName, color, pageNum, totalPages, lines, pageW, pag
         </div>` : ''}
       </div>
     </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad * 2}px;border-top:1px solid rgba(255,255,255,0.15);flex-shrink:0;">
-      <div style="font-size:${isSmall?5:7}px;color:rgba(255,255,255,0.5);">CORE SPORTSWEARS</div>
-      <div style="font-size:${isSmall?5:7}px;color:rgba(255,255,255,0.5);">${pageNum}/${totalPages}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:${pad/2}px ${pad * 2}px;border-top:1px solid #ddd;flex-shrink:0;">
+      <div style="font-size:${isSmall?5:7}px;color:#999;">CORE SPORTSWEARS</div>
+      <div style="font-size:${isSmall?5:7}px;color:#999;">${pageNum}/${totalPages}</div>
     </div>
   </div>`;
 }
