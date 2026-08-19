@@ -683,20 +683,20 @@ function getPages(c){
     productPage += Math.ceil(g.products.length / itemsPerPage);
   });
 
-  // --- Step 2: build TOC lines (subcategories only) ---
-  const tocLines = [];
-  groups.forEach(g => {
-    const startPage = subcatStartPage[g.name] + imagePageCount;
-    tocLines.push({ type: 'subcat', name: g.name, page: startPage });
-  });
-
-  // --- Step 3: count pages ---
+  // --- Step 2: count product & TOC pages first ---
   let productPages = 0;
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
   productPages = Math.max(productPages, 1);
-  const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
-  const pageOffset = tocPages + imagePageCount; // contents pages + image pages before first product
-  const totalPages = tocPages + productPages + imagePageCount; // all pages (image + content)
+  const tocPages = groups.length > 0 ? Math.ceil(groups.length / tocPerPage) : 0;
+  const pageOffset = tocPages + imagePageCount; // image pages + TOC pages before first product
+  const totalPages = tocPages + productPages + imagePageCount; // all pages
+
+  // --- Step 3: build TOC lines with absolute page numbers ---
+  const tocLines = [];
+  groups.forEach(g => {
+    const absPage = subcatStartPage[g.name] + pageOffset;
+    tocLines.push({ type: 'subcat', name: g.name, page: absPage });
+  });
 
   // --- Full-page image pages (Cover, About, How to Work, FAQs) ---
   categoryImages.forEach(imgPage => {
