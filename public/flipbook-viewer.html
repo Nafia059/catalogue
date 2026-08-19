@@ -672,6 +672,8 @@ function getPages(c){
   const dims = getFlipDimensions();
   const itemsPerPage = 4;
   const tocPerPage = 18;
+  const categoryImages = CATEGORY_IMAGES[c.code] || CATEGORY_IMAGES["CAT-01"];
+  const imagePageCount = categoryImages.length;
 
   // --- Step 1: compute product page numbers (relative, starting at 1) ---
   let productPage = 1;
@@ -693,8 +695,6 @@ function getPages(c){
   groups.forEach(g => { productPages += Math.ceil(g.products.length / itemsPerPage); });
   productPages = Math.max(productPages, 1);
   const tocPages = tocLines.length > 0 ? Math.ceil(tocLines.length / tocPerPage) : 0;
-  const categoryImages = CATEGORY_IMAGES[c.code] || CATEGORY_IMAGES["CAT-01"];
-  const imagePageCount = categoryImages.length;
   const pageOffset = tocPages + imagePageCount; // contents pages + image pages before first product
   const totalPages = tocPages + productPages + imagePageCount; // all pages (image + content)
 
