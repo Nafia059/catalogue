@@ -314,6 +314,15 @@ const CATEGORIES = [
     pdfUrl: "#",
     totalPages: 4
   },
+  {
+    code: "CAT-06",
+    name: "Customization Options",
+    desc: "Embroidery, printing, rhinestone, labels, patches, packaging & design services.",
+    slug: "design-customization",
+    color: "#e91e63",
+    pdfUrl: "#",
+    totalPages: 4
+  },
 ];
 
 const FALLBACK_PRODUCTS = {
@@ -359,6 +368,26 @@ const FALLBACK_PRODUCTS = {
     { img: 'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg', name: 'Patches &amp; Badges', desc: 'PVC, rubber, embroidered, leather patches.', sku: '' },
     { img: 'https://coresportswears.com/wp-content/uploads/2026/05/custom_rubber_patch.webp', name: 'Custom Rubber Patches', desc: '3D rubber logos, PVC patches.', sku: '' },
     { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_woven_label.webp', name: 'Woven Labels &amp; Tags', desc: 'Custom woven labels, satin tags, neck tape.', sku: '' }
+  ],
+  "CAT-06": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Flat-Embroidery.jpg', name: 'Custom Embroidered Heat Transfer Patch', desc: 'Embroidered patches, heat transfer, iron-on, sew-on.', sku: 'DS-EMB-02' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/3D-Embroidery.jpg', name: '3D Embroidery', desc: 'Premium 3D embroidery for apparel branding.', sku: 'DS-EMB-04' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Chenille-Embroidery.jpg', name: 'Chenille Embroidery', desc: 'Soft chenille embroidery for patches and logos.', sku: 'DS-EMB-05' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg', name: 'Sequin Embroidery', desc: 'Shimmering sequin embroidery for premium apparel.', sku: 'DS-EMB-03' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/22_pic.jpg', name: 'Tackle Twill', desc: 'Layered twill applique for sports jerseys.', sku: 'DS-EMB-01' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/screen_printing_collage.webp', name: 'Screen Printing for Apparel', desc: 'Bulk screen printing for cotton, polyester, fleece.', sku: 'CPO-SP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/sublimation-printing.webp', name: 'Sublimation Printing', desc: 'Full-color heat transfer sublimation on polyester.', sku: 'CPO-SUB-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_jacket_converted.webp', name: 'Seam to Seam Printing', desc: 'Logo printed onto fabric before stitching.', sku: 'CPO-STS-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_reflective_1000x1000.webp', name: 'Reflective Heat Transfer Logos', desc: 'Bright reflective logos for safety and style.', sku: 'CPO-RFP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_logo.webp', name: 'Custom Glitter Printing', desc: 'Glitter, foil, puff, rubber, silicone print.', sku: 'CPO-GLT-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/Rhine-stone-drop-shoulder-tshirt-4.webp', name: 'Customised Rhinestone Logos', desc: 'Acrylic, resin, glass &amp; crystal rhinestones.', sku: 'DSTS-3' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_badges.webp', name: 'Custom 3D Rubber Logo Patch', desc: 'Raised rubber patches for bags, caps, jackets.', sku: 'Rubber-LOGO-02' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/custom_rubber_patch.webp', name: 'Custom Rubber Logo 3D Soft PVC', desc: '3D soft PVC rubber logo patches, durable.', sku: 'PVC-LOGO-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_label.webp', name: 'Custom Woven Label for Clothing', desc: 'Damask woven labels, neck labels, hem labels.', sku: 'LBL-EFL-2' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_woven_label.webp', name: 'Custom Satin Printed Label', desc: 'Satin ribbon labels, care labels, size labels.', sku: 'LBL-EFL-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_neck_tape_screen_printing_process_1000x1000.webp', name: 'Custom Printed Neck Tape', desc: 'Screen printed neck tape with repeated logos.', sku: 'CSW-NTP-SP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_polybag.webp', name: 'Custom Clear BOPP Plastic Bags', desc: 'Clear packaging bags with logo printing.', sku: 'BPB-2' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/compostable_bag.webp', name: 'Biodegradable Polybag', desc: 'Eco-friendly compostable packaging bags.', sku: 'BPB-001' }
   ]
 };
 
@@ -395,6 +424,14 @@ async function fetchAllProducts() {
     "custom-bags": "CAT-04",
     "sports-accessories": "CAT-05",
     "beanies-winter-headwear": "CAT-05",
+    "design-customization": "CAT-06",
+    "custom-embroidery": "CAT-06",
+    "printings-options": "CAT-06",
+    "custom-rhinestone": "CAT-06",
+    "labels-tags": "CAT-06",
+    "pvc-rubber-logos": "CAT-06",
+    "poly-bags": "CAT-06",
+    "patternmaking": "CAT-06",
   };
 
   let categoriesMap = {};
