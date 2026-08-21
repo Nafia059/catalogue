@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Core Sportswears — Catalogue</title>
+<title>Core Sportswears â€” Catalogue</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 
@@ -101,72 +101,42 @@
   .section-head p{color:var(--ink-dim); max-width:700px; margin:10px auto 0; font-size:16px; line-height:1.7;}
 
   .cat-grid{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:40px;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:30px;
+    max-width:1200px;
+    margin:0 auto;
   }
+  @media (max-width:1000px){ .cat-grid{grid-template-columns:repeat(3, 1fr);} }
+  @media (max-width:700px){ .cat-grid{grid-template-columns:repeat(2, 1fr);} }
+  @media (max-width:400px){ .cat-grid{grid-template-columns:1fr;} }
+
   .cat-card{
     background:none;
     border:none;
-    width:240px;
     cursor:pointer;
     display:flex; flex-direction:column; align-items:center; text-align:center;
   }
 
-  .book-scene{
+  .cat-cover{
     position:relative;
-    width:210px; height:180px;
+    width:100%;
+    aspect-ratio:3/4;
     margin-bottom:16px;
-    transition:transform .35s ease;
-    transform-style:preserve-3d;
-    filter:drop-shadow(10px 18px 20px rgba(0,0,0,.2));
+    border-radius:6px;
+    overflow:hidden;
+    background:#f4f4f4;
+    filter:drop-shadow(4px 6px 12px rgba(0,0,0,.12));
+    transition:transform .35s ease, filter .35s ease;
   }
-  .cat-card:hover .book-scene{ transform:translateY(-10px) scale(1.03); }
-
-  .book-open{
-    position:absolute; left:6px; bottom:6px;
-    width:150px; height:158px;
-    display:flex;
-    transform:perspective(900px) rotateX(8deg) rotate(-3deg);
-    will-change:transform;
+  .cat-card:hover .cat-cover{
+    transform:translateY(-8px) scale(1.03);
+    filter:drop-shadow(6px 10px 18px rgba(0,0,0,.2));
   }
-  .book-open .leaf{
-    position:relative; width:50%; height:100%;
-    background:linear-gradient(100deg,#f7f5ef,#e8e4d6);
-  }
-  .book-open .leaf:first-child{ border-radius:3px 0 0 3px; box-shadow:inset -8px 0 14px -10px rgba(0,0,0,.3); }
-  .book-open .leaf:last-child{ border-radius:0 3px 3px 0; box-shadow:inset 8px 0 14px -10px rgba(0,0,0,.3); }
-  .book-open .leaf .shot{
-    position:absolute; left:10%; right:10%;
-    background-color:rgba(20,22,26,.14); background-size:cover; background-position:center; border-radius:1px;
-  }
-  .book-open .stack{
-    position:absolute; left:2px; right:2px; bottom:-3px; height:10px;
-    background:repeating-linear-gradient(180deg,#dedad0 0 1px, #cfcabb 1px 2px);
-    border-radius:0 0 3px 3px;
-    z-index:-1;
-  }
-  .book-open .ribbon{
-    position:absolute; top:-4px; left:calc(50% - 5px); width:10px; height:26px;
-    background:var(--accent); clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);
-    z-index:3;
-  }
-
-  .book-cover{
-    position:absolute; right:0; bottom:0;
-    width:78px; height:172px;
-    border-radius:2px 6px 6px 2px;
-    transform:perspective(900px) rotateY(22deg) rotate(5deg);
-    box-shadow:12px 18px 26px rgba(0,0,0,.2), inset 0 0 0 1px rgba(255,255,255,.06);
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:16px;
-    background-image:linear-gradient(160deg, rgba(255,255,255,.16), rgba(0,0,0,.18) 70%);
-    will-change:transform;
-  }
-  .book-cover .code{
-    writing-mode:vertical-rl;
-    font-family:var(--font-display); font-size:10px; letter-spacing:0.18em;
-    color:rgba(255,255,255,.92); text-transform:uppercase;
+  .cat-cover img{
+    width:100%; height:100%;
+    object-fit:contain;
+    padding:8px;
   }
 
   .cat-label{
@@ -175,7 +145,6 @@
     font-weight:600;
     line-height:1.2;
     color:#222529;
-    opacity:1;
     transition: color .3s ease;
   }
   .cat-card:hover .cat-label, .cat-card:focus-visible .cat-label{
@@ -219,7 +188,7 @@
 
 <section class="hero" id="home">
   <h1>The 2026 Product Catalogue</h1>
-  <p>Ski &amp; snow wear, streetwear, sportswear, bags and headwear — browse every
+  <p>Ski &amp; snow wear, streetwear, sportswear, bags and headwear â€” browse every
     category in-line, or download the full PDF pack to send to your team.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="#catalogue">Browse Catalogue</a>
@@ -270,58 +239,34 @@
 <script>
 const CATEGORIES = [
   {
-    code: "CAT-01",
-    name: "Ski & Snow Wear",
-    desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.",
-    slug: "ski-snow-wear",
-    color: "#2f6690",
-    pdfUrl: "#",
-    totalPages: 5
+    code: "CAT-01", name: "Ski & Snow Wear", desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.", slug: "ski-snow-wear", color: "#2f6690", pdfUrl: "#", totalPages: 5,
+    coverImage: "ski-snow-wear-cover.png",
+    page2Img: "/ski-snow-wear-about.png", page3Img: "/ski-snow-wear-how-to-work.png"
   },
   {
-    code: "CAT-02",
-    name: "Streetwear",
-    desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.",
-    slug: "custom-streetwear",
-    color: "#ff4b2b",
-    pdfUrl: "#",
-    totalPages: 5
+    code: "CAT-02", name: "Streetwear", desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.", slug: "custom-streetwear", color: "#ff4b2b", pdfUrl: "#", totalPages: 5,
+    coverImage: "streetwear-cover.png",
+    page2Img: "/streetwear-about.png", page3Img: "/streetwear-how-to-work.png"
   },
   {
-    code: "CAT-03",
-    name: "Sportswear",
-    desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.",
-    slug: "custom-sportswear",
-    color: "#1f8a5b",
-    pdfUrl: "#",
-    totalPages: 4
+    code: "CAT-03", name: "Sportswear", desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.", slug: "custom-sportswear", color: "#1f8a5b", pdfUrl: "#", totalPages: 4,
+    coverImage: "sportswear-cover.png",
+    page2Img: "/sportswear-about.png", page3Img: "/sportswear-how-to-work.png"
   },
   {
-    code: "CAT-04",
-    name: "Bags",
-    desc: "Duffel bags, sports backpacks, fanny bags & tote bags.",
-    slug: "custom-bags",
-    color: "#8a5cf6",
-    pdfUrl: "#",
-    totalPages: 3
+    code: "CAT-04", name: "Bags", desc: "Duffel bags, sports backpacks, fanny bags & tote bags.", slug: "custom-bags", color: "#8a5cf6", pdfUrl: "#", totalPages: 3,
+    coverImage: "bags-cover.png",
+    page2Img: "/bags-about.png", page3Img: "/bags-how-to-work.png"
   },
   {
-    code: "CAT-05",
-    name: "Headwear & Accessories",
-    desc: "Caps, beanies, patches, sleeves, socks & custom trims.",
-    slug: "sports-accessories",
-    color: "#d1a13d",
-    pdfUrl: "#",
-    totalPages: 4
+    code: "CAT-05", name: "Headwear & Accessories", desc: "Caps, beanies, patches, sleeves, socks & custom trims.", slug: "sports-accessories", color: "#d1a13d", pdfUrl: "#", totalPages: 4,
+    coverImage: "headwear-cover.png",
+    page2Img: "/headwear-about.png", page3Img: "/headwear-how-to-work.png"
   },
   {
-    code: "CAT-06",
-    name: "Customization Options",
-    desc: "Embroidery, printing, rhinestone, labels, patches, packaging & design services.",
-    slug: "design-customization",
-    color: "#e91e63",
-    pdfUrl: "#",
-    totalPages: 4
+    code: "CAT-06", name: "Customization Options", desc: "Embroidery, printing, rhinestone, labels, patches, packaging & design services.", slug: "design-customization", color: "#e91e63", pdfUrl: "#", totalPages: 4,
+    coverImage: "CORE_Sportswears_Customization_Options_Catalog_4Pages-1.png",
+    page2Img: "/CORE_Sportswears_Customization_Options_Catalog_4Pages-2.png", page3Img: "/CORE_Sportswears_Customization_Options_Catalog_4Pages-3.png"
   },
 ];
 
@@ -438,7 +383,7 @@ async function fetchAllProducts() {
   try {
     let catPage = 1;
     while (true) {
-      const catData = await fetchFromWC('products/categories', { per_page: '100', page: String(catPage), hide_empty: 'false' });
+      const catData = await fetchFromWC('products.categories', { per_page: '100', page: String(catPage), hide_empty: 'false' });
       if (!catData || !catData.length) break;
       catData.forEach(c => { categoriesMap[c.id] = c; });
       catPage++;
@@ -526,29 +471,13 @@ function renderCategories() {
   CATEGORIES.forEach((cat, i) => {
     const card = document.createElement('div');
     card.className = 'cat-card';
-    const products = PRODUCTS[cat.code] || [];
-    const imgs = products.slice(0, 4);
     card.innerHTML = `
-      <div class="book-scene">
-        <div class="book-open">
-          <div class="ribbon"></div>
-          <div class="leaf">
-            <div class="shot" style="top:14%; height:26%; background-image:url('${imgs[0] ? imgs[0].img : ''}')"></div>
-            <div class="shot" style="top:46%; height:38%; background-image:url('${imgs[1] ? imgs[1].img : ''}')"></div>
-          </div>
-          <div class="leaf">
-            <div class="shot" style="top:14%; height:40%; background-image:url('${imgs[2] ? imgs[2].img : ''}')"></div>
-            <div class="shot" style="top:60%; height:24%; background-image:url('${imgs[3] ? imgs[3].img : ''}')"></div>
-          </div>
-          <div class="stack"></div>
-        </div>
-        <div class="book-cover" style="background-color:${cat.color}">
-          <span class="code">${cat.code}</span>
-        </div>
+      <div class="cat-cover">
+        <img src="${cat.coverImage}" alt="${cat.name}">
       </div>
-      <div class="cat-label" style="color:${cat.color}">
+      <div class="cat-label">
         ${cat.name}
-        <small>Catalogue &mdash; tap to view</small>
+        <small>Catalogue â€” tap to view</small>
       </div>`;
     card.tabIndex = 0;
     card.addEventListener('click', () => openCatalogue(i));
