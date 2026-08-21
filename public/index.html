@@ -103,8 +103,8 @@
   .cat-grid{
     display:grid;
     grid-template-columns:repeat(4, 1fr);
-    gap:30px;
-    max-width:1200px;
+    gap:24px;
+    max-width:1100px;
     margin:0 auto;
   }
   @media (max-width:1000px){ .cat-grid{grid-template-columns:repeat(3, 1fr);} }
@@ -116,13 +116,14 @@
     border:none;
     cursor:pointer;
     display:flex; flex-direction:column; align-items:center; text-align:center;
+    max-width:240px;
   }
 
   .cat-cover{
     position:relative;
     width:100%;
-    aspect-ratio:5/6;
-    margin-bottom:16px;
+    aspect-ratio:4/3;
+    margin-bottom:14px;
     border-radius:6px;
     overflow:hidden;
     background:#f4f4f4;
@@ -130,13 +131,13 @@
     transition:transform .35s ease, filter .35s ease;
   }
   .cat-card:hover .cat-cover{
-    transform:translateY(-8px) scale(1.03);
+    transform:translateY(-6px) scale(1.02);
     filter:drop-shadow(6px 10px 18px rgba(0,0,0,.2));
   }
   .cat-cover img{
     width:100%; height:100%;
     object-fit:contain;
-    padding:8px;
+    padding:10px;
   }
 
   .cat-label{
@@ -240,27 +241,27 @@
 const CATEGORIES = [
   {
     code: "CAT-01", name: "Ski & Snow Wear", desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.", slug: "ski-snow-wear", color: "#2f6690", pdfUrl: "#", totalPages: 5,
-    coverImage: "ski-snowear.png",
+    coverImage: "ski-snowear.jfif",
     page2Img: "/ski-snow-wear-about.png", page3Img: "/ski-snow-wear-how-to-work.png"
   },
   {
     code: "CAT-02", name: "Streetwear", desc: "Hoodies, tees, flannel shirts, jackets, joggers & fashion streetwear.", slug: "custom-streetwear", color: "#ff4b2b", pdfUrl: "#", totalPages: 5,
-    coverImage: "street-wear.png",
+    coverImage: "street-wear.jfif",
     page2Img: "/streetwear-about.png", page3Img: "/streetwear-how-to-work.png"
   },
   {
     code: "CAT-03", name: "Sportswear", desc: "Basketball, soccer, football, rugby, cricket, cycling & fitness teamwear.", slug: "custom-sportswear", color: "#1f8a5b", pdfUrl: "#", totalPages: 4,
-    coverImage: "sportwear.png",
+    coverImage: "sportwear.jfif",
     page2Img: "/sportswear-about.png", page3Img: "/sportswear-how-to-work.png"
   },
   {
     code: "CAT-04", name: "Bags", desc: "Duffel bags, sports backpacks, fanny bags & tote bags.", slug: "custom-bags", color: "#8a5cf6", pdfUrl: "#", totalPages: 3,
-    coverImage: "bags.png",
+    coverImage: "bags.jfif",
     page2Img: "/bags-about.png", page3Img: "/bags-how-to-work.png"
   },
   {
     code: "CAT-05", name: "Headwear & Accessories", desc: "Caps, beanies, patches, sleeves, socks & custom trims.", slug: "sports-accessories", color: "#d1a13d", pdfUrl: "#", totalPages: 4,
-    coverImage: "headwear.png",
+    coverImage: "headwear.jfif",
     page2Img: "/headwear-about.png", page3Img: "/headwear-how-to-work.png"
   },
   {
@@ -492,6 +493,7 @@ function openCatalogue(i) {
 </script>
 </body>
 </html>
+
 
 
 
