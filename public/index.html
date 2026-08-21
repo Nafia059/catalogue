@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -121,7 +121,7 @@
   .cat-cover{
     position:relative;
     width:100%;
-    aspect-ratio:4/5;
+    aspect-ratio:5/6;
     margin-bottom:16px;
     border-radius:6px;
     overflow:hidden;
@@ -477,7 +477,7 @@ function renderCategories() {
       </div>
       <div class="cat-label">
         ${cat.name}
-        <small>Catalogue â€” tap to view</small>
+        <small>Catalogue - tap to view</small>
       </div>`;
     card.tabIndex = 0;
     card.addEventListener('click', () => openCatalogue(i));
@@ -492,5 +492,6 @@ function openCatalogue(i) {
 </script>
 </body>
 </html>
+
 
 
