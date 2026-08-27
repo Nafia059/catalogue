@@ -171,8 +171,17 @@
   footer .foot-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
   footer .foot-top a{display:block; margin-top:8px; color:var(--ink);}
   footer .bottom{border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+  
+.embed-mode header.nav,
+.embed-mode .hero,
+.embed-mode .strip,
+.embed-mode footer {
+  display: none !important;
+}
 
-
+.embed-mode .section {
+  padding-top: 20px !important;
+}
 </style>
 </head>
 <body>
@@ -551,6 +560,14 @@ function renderCategories() {
 function openCatalogue(i) {
   window.open('/flipbook-viewer.html?cat=' + i, '_blank');
 }
+</script>
+<script>
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('embed') === 'true') {
+    document.documentElement.classList.add('embed-mode');
+  }
+})();
 </script>
 </body>
 </html>
