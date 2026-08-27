@@ -1,0 +1,564 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Sportswears - Catalogue</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap');
+  :root{
+    --bg: #ffffff;
+    --bg-panel: #f4f4f4;
+    --ink: #333333;
+    --ink-dim: #777777;
+    --line: #e0e0e0;
+    --accent: #00991a;
+    --accent-2: #212529;
+    --accent-ink: #ffffff;
+    --radius: 4px;
+    --font-display: 'Poppins', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:var(--font-display);
+    font-weight:600;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+
+  header.nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5vw;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:var(--font-display);
+    font-size:22px;
+    font-weight:700;
+    color:var(--accent);
+  }
+  nav.links{display:flex; gap:32px; font-size:12px; font-weight:600; text-transform:uppercase;}
+  nav.links a{color:#222529; transition:color .2s;}
+  nav.links a:hover{color:var(--accent);}
+  .nav-cta{
+    padding:10px 20px; background:var(--accent); color:#fff;
+    font-size:12px; font-weight:600; text-transform:uppercase;
+    border-radius:var(--radius);
+  }
+  @media (max-width:800px){ nav.links{display:none;} }
+
+  .hero{
+    text-align:center;
+    padding:100px 5vw 60px;
+  }
+  .hero h1{
+    font-size:44px;
+    font-weight:700;
+    margin-bottom:15px;
+    color:#222529;
+  }
+  .hero p{
+    color:var(--ink-dim);
+    font-size:16px;
+    line-height:1.7;
+    max-width:900px;
+    margin:0 auto;
+  }
+  .hero-actions{display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; justify-content:center;}
+  .btn{
+    padding:12px 28px; font-size:14px;
+    font-weight:600; border-radius:var(--radius); border:1px solid transparent;
+    cursor:pointer; transition:transform .15s ease, background .2s;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-primary{background:var(--accent); color:#fff;}
+  .btn-primary:hover{background:#008a18;}
+  .btn-ghost{border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink-dim);}
+
+  .section{padding:80px 5vw;}
+  .section-head{
+    text-align:center;
+    margin-bottom:50px;
+  }
+  .section-head h2{font-size:44px; font-weight:700; color:#222529;}
+  .section-head p{color:var(--ink-dim); max-width:700px; margin:10px auto 0; font-size:16px; line-height:1.7;}
+
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:24px;
+    max-width:1100px;
+    margin:0 auto;
+  }
+  @media (max-width:1000px){ .cat-grid{grid-template-columns:repeat(3, 1fr);} }
+  @media (max-width:700px){ .cat-grid{grid-template-columns:repeat(2, 1fr);} }
+  @media (max-width:400px){ .cat-grid{grid-template-columns:1fr;} }
+
+  .cat-card{
+    background:none;
+    border:none;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+    max-width:240px;
+  }
+
+  .cat-cover{
+    position:relative;
+    width:100%;
+    aspect-ratio:4/3;
+    margin-bottom:14px;
+    border-radius:6px;
+    overflow:hidden;
+    background:#f4f4f4;
+    filter:drop-shadow(4px 6px 12px rgba(0,0,0,.12));
+    transition:transform .35s ease, filter .35s ease;
+  }
+  .cat-card:hover .cat-cover{
+    transform:translateY(-6px) scale(1.02);
+    filter:drop-shadow(6px 10px 18px rgba(0,0,0,.2));
+  }
+  .cat-cover img{
+    width:100%; height:100%;
+    object-fit:contain;
+    padding:10px;
+    transform:scale(1.32);
+  }
+
+  .cat-label{
+    font-family:var(--font-display);
+    font-size:17px;
+    font-weight:600;
+    line-height:1.2;
+    color:#222529;
+    transition: color .3s ease;
+  }
+  .cat-card:hover .cat-label, .cat-card:focus-visible .cat-label{
+    color:var(--accent);
+  }
+  .cat-label small{
+    display:block; margin-top:6px;
+    font-weight:400;
+    font-size:13px; color:var(--ink-dim);
+  }
+
+  .strip{
+    padding:70px 5vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    background:var(--bg-panel);
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px;
+  }
+  .strip .step .num{font-family:var(--font-display); font-size:34px; font-weight:600; color:var(--accent);}
+  .strip .step h4{font-size:15px; margin-top:8px; font-weight:600;}
+  .strip .step p{font-size:13px; color:var(--ink-dim); margin-top:6px;}
+
+  footer{padding:60px 5vw 40px; border-top:1px solid var(--line); font-size:13px; color:var(--ink-dim);}
+  footer .foot-top{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
+  footer .foot-top a{display:block; margin-top:8px; color:var(--ink);}
+  footer .bottom{border-top:1px solid var(--line); padding-top:20px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;}
+
+
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="logo">CORE <span>SPORTS</span>WEARS</div>
+  <nav class="links">
+    <a href="#home">Home</a>
+    <a href="#catalogue">Catalogue</a>
+    <a href="#how">How It Works</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <a class="nav-cta" href="https://api.whatsapp.com/send/?phone=923328624992" target="_blank">WhatsApp Us</a>
+</header>
+
+
+<section class="section" id="catalogue">
+  <div class="section-head">
+    <div>
+      <h2>Explore Our Catalogue</h2>
+      <p>Tap a category to flip through the collection online.</p>
+    </div>
+  </div>
+  <div class="cat-grid" id="catGrid"></div>
+</section>
+
+<section class="strip" id="how">
+  <div class="step"><div class="num">01</div><h4>Open a Catalogue</h4><p>Click any category card to launch the flipbook viewer.</p></div>
+  <div class="step"><div class="num">02</div><h4>Browse Pages</h4><p>Click the page corners or use arrows to flip through.</p></div>
+  <div class="step"><div class="num">03</div><h4>Download PDF</h4><p>Grab the full catalogue PDF from the viewer header.</p></div>
+  <div class="step"><div class="num">04</div><h4>Send Your Brief</h4><p>WhatsApp us your tech pack, logo or reference image.</p></div>
+</section>
+
+<footer id="contact">
+  <div class="foot-top">
+    <div>
+      <div class="logo">CORE SPORTSWEARS</div>
+      <a href="mailto:coresportswears@gmail.com">coresportswears@gmail.com</a>
+      <a href="tel:+923398624992">+92 339 8624992</a>
+      <a href="#">Sadra Badra Town, Daak Wala Stop Daska Road, Sialkot, Pakistan</a>
+    </div>
+    <div>
+      <a href="https://coresportswears.com/product-category/ski-snow-wear/">Ski &amp; Snow Wear</a>
+      <a href="https://coresportswears.com/product-category/custom-streetwear/">Streetwear</a>
+      <a href="https://coresportswears.com/product-category/custom-sportswear/">Sportswear</a>
+      <a href="https://coresportswears.com/product-category/design-customization/">Customization Options</a>
+    </div>
+  </div>
+  <div class="bottom">
+    <span>Core Sportswears &copy; 2026 All Rights Reserved</span>
+    <span>Catalogue template</span>
+  </div>
+</footer>
+
+
+
+<script>
+const CATEGORIES = [
+  {
+    code: "CAT-01", name: "Ski & Snow Wear", desc: "Jackets, pants, base layers, insulated outerwear & winter accessories.", slug: "ski-snow-wear", color: "#2f6690", pdfUrl: "#", totalPages: 5,
+    coverImage: "ski-snowear.jfif",
+    page2Img: "/ski-snow-wear-about.png", page3Img: "/ski-snow-wear-how-to-work.png"
+  },
+  {
+    code: "CAT-02", name: "Streetwear", desc: "Hoodies, tees, jackets, joggers, headwear, accessories & fashion streetwear.", slug: "custom-streetwear", color: "#ff4b2b", pdfUrl: "#", totalPages: 5,
+    coverImage: "street-wear.jfif",
+    page2Img: "/streetwear-about.png", page3Img: "/streetwear-how-to-work.png"
+  },
+  {
+    code: "CAT-03", name: "Sportswear", desc: "Basketball, soccer, football, rugby, baseball, hockey, running, bags, headwear & teamwear.", slug: "custom-sportswear", color: "#1f8a5b", pdfUrl: "#", totalPages: 4,
+    coverImage: "sportwear.jfif",
+    page2Img: "/sportswear-about.png", page3Img: "/sportswear-how-to-work.png"
+  },
+  {
+    code: "CAT-04", name: "Customization Options", desc: "Embroidery, printing, rhinestone, labels, patches, packaging & design services.", slug: "design-customization", color: "#e91e63", pdfUrl: "#", totalPages: 4,
+    coverImage: "customization.png",
+    page2Img: "/CORE_Sportswears_Customization_Options_Catalog_4Pages-2.png", page3Img: "/CORE_Sportswears_Customization_Options_Catalog_4Pages-3.png"
+  },
+];
+
+const FALLBACK_PRODUCTS = {
+  "CAT-01": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/front-view-snow-pant.png', name: '15K Snowwear Pant', desc: 'Waterproof snow pants with 15K rating.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/cordura-snowboarding-pant-3.webp', name: '20K Snowboarding Pants', desc: 'Premium 20K waterproof, taped seams, Cordura.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/12/ski-pant-front.jpg', name: 'Softshell Snowboard Pants', desc: 'Stretch comfort with DWR weather resistance.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/hALF-HALF-PANT-5.webp', name: 'Half-Half Baggy Snow Pant', desc: 'Two-tone baggy silhouette with boot gaiter.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/sherpa-fleece-pant_05_1000x1000.webp', name: 'Sherpa Fleece Snow Pants', desc: 'Serious warmth with sherpa fleece lining.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_sportswears_pants_side.webp', name: 'Fleece Lined Softshell Pant', desc: 'Fleece-lined softshell with weather-resistant face.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/ski_bib_1000x1000.webp', name: 'Snowboarding &amp; Ski Bib', desc: '10K waterproof bib, adjustable suspenders.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/CORE_Camo_Hoodie_Tall_1000x1000.webp', name: 'Camouflage Tall Hoodie', desc: 'Heavyweight cotton camo hoodie in tall sizes.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/ski-balaclava.webp', name: 'Fleece Ski Balaclava', desc: 'Custom fleece balaclava with embroidery options.', sku: '' }
+  ],
+  "CAT-02": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/blue_longsleeve_1000x1000.webp', name: 'Basic Long Sleeve T-Shirt', desc: 'Combed cotton long sleeve tee.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/plum_vneck_front_back_straight_hem.webp', name: 'Basic V-Neck T-Shirt', desc: 'Classic V-neck in premium single jersey cotton.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/charcoal_pocket_tshirt_front_1000x1000.webp', name: 'Pocket T-Shirt', desc: 'Relaxed fit with chest pocket.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/heather_grey_tshirt.webp', name: 'Curved Hem Basic T-Shirt', desc: 'Modern curved hem with side splits.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/dark_grey_tshirt_1000x1000.webp', name: 'Dark Grey Single Jersey T-Shirt', desc: 'Premium dark grey tee, pre-shrunk fabric.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/cotton-stripe-stitching-front.webp', name: 'Stripe Stitched Cotton T-Shirt', desc: 'Color stripe stitching detail on front.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/03/regular-fit-asid-washed-cotton-shirt-front.webp', name: 'Acid Washed Regular Fit Tee', desc: 'Acid washed finish for a vintage look.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/02/bricks-shirt-front-1.webp', name: 'Graphic Printed T-Shirt', desc: 'Custom graphic print on premium tee.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/Rhine-stone-drop-shoulder-tshirt-1.webp', name: 'Drop Shoulder Rhinestone T-Shirt', desc: 'Drop shoulder cut with rhinestone detailing.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Flat-Embroidery.jpg', name: 'Custom Caps &amp; Hats', desc: 'Snapback, dad hats, trucker caps.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/3D-Embroidery.jpg', name: 'Beanies &amp; Winter Hats', desc: 'Knitted, cuffed, slouchy, fleece beanies.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Chenille-Embroidery.jpg', name: 'Gloves, Scarves &amp; Wraps', desc: 'Touchscreen gloves, neck gaiters, headbands.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg', name: 'Patches &amp; Badges', desc: 'PVC, rubber, embroidered, leather patches.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp', name: 'Fanny Packs &amp; Belt Bags', desc: 'Trendy waist packs, custom prints.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/04/streetwear_1125x840.webp', name: 'Tote &amp; Shopping Bags', desc: 'Canvas, cotton, polyester totes.', sku: '' }
+  ],
+  "CAT-03": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_jacket_converted.webp', name: 'Basketball Uniforms', desc: 'Custom reversible jerseys, shorts, compression.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/sublimation-printing.webp', name: 'Soccer Uniforms', desc: 'Custom sublimation jerseys, shorts, socks.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/screen_printing_collage.webp', name: 'Rugby &amp; Football', desc: 'Durable jerseys, pants, and training gear.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_reflective_1000x1000.webp', name: 'Baseball &amp; Cricket', desc: 'Custom jerseys, sublimation, embroidered logos.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_logo.webp', name: 'Cycling &amp; Fitness', desc: 'Compression tops, jerseys, gym shorts, leggings.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing.webp', name: 'Duffel Bags', desc: 'Large-capacity duffels for gym and travel.', sku: '' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_bags_manufacturing-1.webp', name: 'Sports Backpacks', desc: 'Durable backpacks, multiple compartments.', sku: '' }
+  ],
+  "CAT-04": [
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Flat-Embroidery.jpg', name: 'Custom Embroidered Heat Transfer Patch', desc: 'Embroidered patches, heat transfer, iron-on, sew-on.', sku: 'DS-EMB-02' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/3D-Embroidery.jpg', name: '3D Embroidery', desc: 'Premium 3D embroidery for apparel branding.', sku: 'DS-EMB-04' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/Chenille-Embroidery.jpg', name: 'Chenille Embroidery', desc: 'Soft chenille embroidery for patches and logos.', sku: 'DS-EMB-05' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/sequin-embroidery.jpg', name: 'Sequin Embroidery', desc: 'Shimmering sequin embroidery for premium apparel.', sku: 'DS-EMB-03' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2025/11/22_pic.jpg', name: 'Tackle Twill', desc: 'Layered twill applique for sports jerseys.', sku: 'DS-EMB-01' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/screen_printing_collage.webp', name: 'Screen Printing for Apparel', desc: 'Bulk screen printing for cotton, polyester, fleece.', sku: 'CPO-SP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/sublimation-printing.webp', name: 'Sublimation Printing', desc: 'Full-color heat transfer sublimation on polyester.', sku: 'CPO-SUB-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_jacket_converted.webp', name: 'Seam to Seam Printing', desc: 'Logo printed onto fabric before stitching.', sku: 'CPO-STS-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_reflective_1000x1000.webp', name: 'Reflective Heat Transfer Logos', desc: 'Bright reflective logos for safety and style.', sku: 'CPO-RFP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_logo.webp', name: 'Custom Glitter Printing', desc: 'Glitter, foil, puff, rubber, silicone print.', sku: 'CPO-GLT-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/Rhine-stone-drop-shoulder-tshirt-4.webp', name: 'Customised Rhinestone Logos', desc: 'Acrylic, resin, glass &amp; crystal rhinestones.', sku: 'DSTS-3' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/06/core_badges.webp', name: 'Custom 3D Rubber Logo Patch', desc: 'Raised rubber patches for bags, caps, jackets.', sku: 'Rubber-LOGO-02' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/custom_rubber_patch.webp', name: 'Custom Rubber Logo 3D Soft PVC', desc: '3D soft PVC rubber logo patches, durable.', sku: 'PVC-LOGO-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_label.webp', name: 'Custom Woven Label for Clothing', desc: 'Damask woven labels, neck labels, hem labels.', sku: 'LBL-EFL-2' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_woven_label.webp', name: 'Custom Satin Printed Label', desc: 'Satin ribbon labels, care labels, size labels.', sku: 'LBL-EFL-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/CORE_neck_tape_screen_printing_process_1000x1000.webp', name: 'Custom Printed Neck Tape', desc: 'Screen printed neck tape with repeated logos.', sku: 'CSW-NTP-SP-001' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/core_polybag.webp', name: 'Custom Clear BOPP Plastic Bags', desc: 'Clear packaging bags with logo printing.', sku: 'BPB-2' },
+    { img: 'https://coresportswears.com/wp-content/uploads/2026/05/compostable_bag.webp', name: 'Biodegradable Polybag', desc: 'Eco-friendly compostable packaging bags.', sku: 'BPB-001' }
+  ]
+};
+
+let PRODUCTS = JSON.parse(JSON.stringify(FALLBACK_PRODUCTS));
+
+async function fetchFromWC(endpoint, params = {}) {
+  const q = new URLSearchParams({ endpoint, ...params }).toString();
+  const res = await fetch(`/api/wc?${q}`);
+  if (!res.ok) throw new Error(`WC API error: ${res.status}`);
+  return res.json();
+}
+
+async function fetchAllProducts() {
+  const slugToCode = {
+    "ski-snow-wear": "CAT-01",
+    "outerwear": "CAT-01",
+    "ski-snowboarding-pants": "CAT-01",
+    "ski-snowboarding-jackets": "CAT-01",
+    "custom-ski-suits": "CAT-01",
+    "hoodies": "CAT-01",
+    "gloves-mittens": "CAT-01",
+    "ski-snowboard-accessories": "CAT-01",
+    "ski-balaclava-neck-warmers": "CAT-01",
+    "fabrics-for-ski-snow-wear": "CAT-01",
+    "base-layer-jumpsuits": "CAT-01",
+    "base-layer-bottoms-leggings": "CAT-01",
+    "compression-base-layers": "CAT-01",
+    "base-layer-sets": "CAT-01",
+    "custom-streetwear": "CAT-02",
+    "custom-t-shirts": "CAT-02",
+    "basic-t-shirts": "CAT-02",
+    "oversized-streetwear-t-shirts": "CAT-02",
+    "washed-dyed-t-shirts": "CAT-02",
+    "graphic-printed-t-shirts": "CAT-02",
+    "streetwear-fabrics": "CAT-02",
+    "custom-shorts": "CAT-02",
+    "beach-shorts": "CAT-02",
+    "cargo-shorts": "CAT-02",
+    "sweat-shorts": "CAT-02",
+    "custom-tracksuits-co-ord-sets": "CAT-02",
+    "custom-jackets": "CAT-02",
+    "bomber-jackets": "CAT-02",
+    "soft-shell-jackets": "CAT-02",
+    "custom-puffer-down-jackets": "CAT-02",
+    "varsity-jackets": "CAT-02",
+    "hoodies-sweatshirts": "CAT-02",
+    "pullover-hoodies": "CAT-02",
+    "zipper-hoodies": "CAT-02",
+    "sweat-pants-bottoms": "CAT-02",
+    "sweat-shirts": "CAT-02",
+    "head-wears": "CAT-02",
+    "custom-snapback-caps": "CAT-02",
+    "trucker-mesh-caps": "CAT-02",
+    "5-panel-fashion-caps": "CAT-02",
+    "outdoor-bucket-hats": "CAT-02",
+    "sports-accessories": "CAT-02",
+    "tote-bags-shopping-bags": "CAT-02",
+    "fanny-bags": "CAT-02",
+    "custom-patches-badges": "CAT-02",
+    "polo-henley-shirts": "CAT-02",
+    "premium-fabric-t-shirts": "CAT-02",
+    "special-design-t-shirts": "CAT-02",
+    "tank-tops-singlets": "CAT-02",
+    "flannel-button-up-shirts": "CAT-02",
+    "custom-sportswear": "CAT-03",
+    "custom-sportswear-fabrics": "CAT-03",
+    "basketball": "CAT-03",
+    "custom-basketball-jerseys": "CAT-03",
+    "basketball-shorts": "CAT-03",
+    "basketball-uniform-sets": "CAT-03",
+    "basketball-training-compression-wear": "CAT-03",
+    "soccer": "CAT-03",
+    "custom-soccer-jerseys": "CAT-03",
+    "soccer-shorts": "CAT-03",
+    "soccer-uniform-sets": "CAT-03",
+    "soccer-goalkeeper-wear": "CAT-03",
+    "soccer-training-wear": "CAT-03",
+    "american-football": "CAT-03",
+    "american-football-jerseys": "CAT-03",
+    "american-football-pants": "CAT-03",
+    "american-football-uniform-sets": "CAT-03",
+    "football-compression-wear": "CAT-03",
+    "rugby-wear": "CAT-03",
+    "rugby-jerseys-shirts": "CAT-03",
+    "rugby-shorts": "CAT-03",
+    "rugby-uniform-sets": "CAT-03",
+    "rugby-training-protection-wear": "CAT-03",
+    "baseball": "CAT-03",
+    "baseball-jerseys": "CAT-03",
+    "baseball-pants": "CAT-03",
+    "baseball-uniform-sets": "CAT-03",
+    "ice-hockey-uniforms": "CAT-03",
+    "ice-hockey-jerseys": "CAT-03",
+    "ice-hockey-short": "CAT-03",
+    "ice-hockey-uniform-sets": "CAT-03",
+    "running-wear": "CAT-03",
+    "running-jersey": "CAT-03",
+    "running-shorts": "CAT-03",
+    "running-uniform-set": "CAT-03",
+    "custom-bags": "CAT-03",
+    "duffel-bags": "CAT-03",
+    "sports-backpack": "CAT-03",
+    "sports-headwear": "CAT-03",
+    "baseball-sports-caps": "CAT-03",
+    "visor-caps": "CAT-03",
+    "sports-headbands": "CAT-03",
+    "sports-accessories-custom-sportswear": "CAT-03",
+    "compression-sleeves-warmers": "CAT-03",
+    "custom-flags": "CAT-03",
+    "custom-socks": "CAT-03",
+    "custom-sports-towels": "CAT-03",
+    "design-customization": "CAT-04",
+    "custom-embroidery": "CAT-04",
+    "printings-options": "CAT-04",
+    "custom-rhinestone": "CAT-04",
+    "labels-tags": "CAT-04",
+    "pvc-rubber-logos": "CAT-04",
+    "poly-bags": "CAT-04",
+    "patternmaking": "CAT-04",
+    "leather-patches": "CAT-04",
+  };
+
+  const slugPriority = {
+    "sports-headwear":0,"baseball-sports-caps":0,"visor-caps":0,"sports-headbands":0,
+    "head-wears":1,"custom-snapback-caps":1,"trucker-mesh-caps":1,
+    "5-panel-fashion-caps":1,"outdoor-bucket-hats":1,
+    "tote-bags-shopping-bags":0,"fanny-bags":0,
+    "custom-bags":1,"duffel-bags":1,"sports-backpack":1,
+  };
+
+  let categoriesMap = {};
+  try {
+    let catPage = 1;
+    while (true) {
+      const catData = await fetchFromWC('products.categories', { per_page: '100', page: String(catPage), hide_empty: 'false' });
+      if (!catData || !catData.length) break;
+      catData.forEach(c => { categoriesMap[c.id] = c; });
+      catPage++;
+    }
+  } catch (_) {}
+
+  function resolveCatCode(catId) {
+    let current = categoriesMap[catId];
+    while (current) {
+      if (slugToCode[current.slug]) return slugToCode[current.slug];
+      current = current.parent ? categoriesMap[current.parent] : null;
+    }
+    return null;
+  }
+
+  const all = [];
+  let page = 1;
+  while (true) {
+    const data = await fetchFromWC('products', { per_page: '100', page: String(page) });
+    if (!data || !data.length) break;
+    all.push(...data);
+    page++;
+  }
+
+  const grouped = {};
+  CATEGORIES.forEach(c => { grouped[c.code] = []; });
+
+  all.forEach(p => {
+    const matched = [];
+    (p.categories || []).forEach(cat => {
+      const directCode = slugToCode[cat.slug];
+      if (directCode) { matched.push({slug:cat.slug, code:directCode}); return; }
+      const walked = resolveCatCode(cat.id);
+      if (walked) matched.push({slug:cat.slug, code:walked});
+    });
+    if (matched.length) {
+      matched.sort((a, b) => (slugPriority[a.slug] ?? 5) - (slugPriority[b.slug] ?? 5));
+      const code = matched[0].code;
+      const name = p.name || '';
+      const desc = p.short_description ? p.short_description.replace(/<[^>]*>/g, '').trim() : '';
+      const img = (p.images && p.images[0]) ? p.images[0].src : '';
+      const sku = p.sku || '';
+      if (img && !grouped[code].some(ex => ex.img === img)) {
+        grouped[code].push({ img, name, desc, sku });
+      }
+    }
+  });
+
+  return grouped;
+}
+
+function ensureEven(n) { return n + (n % 2); }
+function updateTotalPages() {
+  CATEGORIES.forEach(cat => {
+    const count = (PRODUCTS[cat.code] || []).length;
+    cat.totalPages = ensureEven(Math.max(4, Math.ceil(count / 4) + 2));
+  });
+}
+
+updateTotalPages();
+renderCategories();
+
+(async function loadCatalog() {
+  try {
+    const fetched = await fetchAllProducts();
+    let updated = false;
+    CATEGORIES.forEach(c => {
+      if (fetched[c.code] && fetched[c.code].length > 0) {
+        PRODUCTS[c.code] = fetched[c.code];
+        updated = true;
+      }
+    });
+    if (updated) {
+      updateTotalPages();
+      renderCategories();
+      console.log('Catalogue updated from WooCommerce API');
+    }
+  } catch (e) {
+    console.warn('Could not fetch from WooCommerce API, using fallback data.', e);
+  }
+})();
+
+function renderCategories() {
+  const grid = document.getElementById('catGrid');
+  grid.innerHTML = '';
+  CATEGORIES.forEach((cat, i) => {
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.innerHTML = `
+      <div class="cat-cover">
+        <img src="${cat.coverImage}" alt="${cat.name}">
+      </div>
+      <div class="cat-label">
+        ${cat.name}
+        <small>Catalogue - tap to view</small>
+      </div>`;
+    card.tabIndex = 0;
+    card.addEventListener('click', () => openCatalogue(i));
+    card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openCatalogue(i); });
+    grid.appendChild(card);
+  });
+}
+
+function openCatalogue(i) {
+  window.open('/flipbook-viewer.html?cat=' + i, '_blank');
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

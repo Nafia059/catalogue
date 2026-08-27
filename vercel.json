@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "framework": null,
+  "outputDirectory": "public",
+  "installCommand": "echo skip",
+  "buildCommand": "echo skip"
+}
