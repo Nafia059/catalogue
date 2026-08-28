@@ -681,12 +681,10 @@ function buildPageHTML(name, color, pageNum, totalPages, products, pageW, pageH)
     </div>`;
   }
   if(pageNum === totalPages - 1){
-    return `<div class="page-inner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 3}px;position:relative;">
-      <h2 style="font-size:${isSmall?14:22}px;margin-bottom:${isSmall?6:10}px;text-align:center;">Let's Build Your Collection</h2>
-      <p style="font-size:${isSmall?9:12}px;max-width:300px;text-align:center;">WhatsApp +92 339 8624992</p>
-      <div style="margin-top:${isSmall?10:18}px;width:${isSmall?20:35}px;height:3px;background:${color};border-radius:2px;"></div>
+    return `<div class="page-inner" style="display:flex;align-items:center;justify-content:center;height:100%;width:100%;padding:0;position:relative;">
+      <img src="back-cover.jpg" alt="Back Cover" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:${pad * 3}px;\\'><h2 style=\\'font-size:${isSmall?14:22}px;margin-bottom:${isSmall?6:10}px;text-align:center;\\'>Let\\'s Build Your Collection</h2><p style=\\'font-size:${isSmall?9:12}px;max-width:300px;text-align:center;\\'>WhatsApp +92 339 8624992</p></div>'">
     </div>`;
-  }
+}
   return '';
 }
 
@@ -792,8 +790,7 @@ function getPages(c){
   });
 
   // --- Back cover ---
-  pages.push({html:buildPageHTML(c.name,c.color,totalPages-1,totalPages,products,dims.width,dims.height),bg:'#222529',color:'#fff',subcat:null});
-
+pages.push({html:buildPageHTML(c.name,c.color,totalPages-1,totalPages,products,dims.width,dims.height),bg:'#fff',color:'#fff',subcat:null});
   return pages;
 }
 
